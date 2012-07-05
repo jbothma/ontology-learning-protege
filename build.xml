@@ -55,6 +55,9 @@
 	<property name="owl.lib" location="${protege.plugins}/org.semanticweb.owl.owlapi.jar" />
 
 	<property name="owl.editor.jar" location="${protege.plugins}/org.protege.editor.owl.jar" />
+	
+	<property name="gate.lib" location="/home/jdb/bin/gate-7.0-build4195-ALL/lib" />
+	<property name="gate.jar" location="/home/jdb/bin/gate-7.0-build4195-ALL/bin/gate.jar" />
 
 
 	<target name="init">
@@ -118,6 +121,8 @@
 			<pathelement location="${equinox.registry}" />
 			<pathelement location="${owl.editor.jar}" />
 			<pathelement location="${owl.lib}" />
+			<pathelement location="${gate.lib}" />
+			<pathelement location="${gate.jar}/" />
 			<!-- 
             **** CHANGE ME ****
 

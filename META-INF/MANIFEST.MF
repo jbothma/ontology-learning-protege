@@ -6,7 +6,7 @@ Bundle-Category: protege
 Bundle-Description: A simple plugin for a plugin development tutorial
 Bundle-Vendor: The Protege Development Team
 Bundle-DocURL: www.perhaps.i.donthaveoneyet.com
-Bundle-ClassPath: .
+Bundle-ClassPath: .,/home/jdb/bin/gate-7.0-build4195-ALL/bin/gate.jar
 Import-Package: org.osgi.framework,
  org.apache.log4j,
  javax.swing,
