@@ -4,6 +4,7 @@ import gate.creole.ResourceInstantiationException;
 import gate.persist.PersistenceException;
 import gate.security.SecurityException;
 
+import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JPanel;
 import javax.swing.JButton;
@@ -12,6 +13,8 @@ import java.awt.Component;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
+import java.io.IOException;
+import java.net.MalformedURLException;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 
@@ -25,22 +28,21 @@ public class BobPanel extends JPanel {
 	public BobPanel() {
 		//final JPanel panel = this;
 		
-//		JButton btnNewOntologyLearning = new JButton("New ontology learning project");
-//		btnNewOntologyLearning.addMouseListener(new MouseAdapter() {
-//			@Override
-//			public void mouseClicked(MouseEvent arg0) {
-//				newProject();
-//			}
-//		});
-//		add(btnNewOntologyLearning);
-//		
-//		JButton btnPopulateFromDirectory = new JButton("Populate from directory");
-//		btnPopulateFromDirectory.addActionListener(new ActionListener() {
-//			public void actionPerformed(ActionEvent e) {
-//				System.out.println("action performed.");
-//			}
-//		});
-//		add(btnPopulateFromDirectory);
+		JButton btnNewOntologyLearning = new JButton("New ontology learning project");
+		btnNewOntologyLearning.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				newProject();
+			}
+		});
+		add(btnNewOntologyLearning);
+		
+		JButton btnPopulateFromDirectory = new JButton("Populate from directory");
+		btnPopulateFromDirectory.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				populateFromDir();
+			}
+		});
+		add(btnPopulateFromDirectory);
 	}
 	
 	private void newProject() {
@@ -66,7 +68,22 @@ public class BobPanel extends JPanel {
 			}
 		} else {
 			
+		}		
+	}
+	
+	private void populateFromDir() {
+		PopulateFromDirDialog dialog = new PopulateFromDirDialog();
+		dialog.showDialog();
+		if (dialog.getOk()) {
+			String directory = dialog.getDirectory();
+			String extension = dialog.getExtension();
+			Boolean recurse = dialog.getRecurse();
+			try {
+				project.populateFromDir(directory, extension, recurse);
+			} catch (ResourceInstantiationException | PersistenceException | IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
-		
 	}
 }

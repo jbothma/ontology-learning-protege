@@ -27,8 +27,13 @@ public class TutView extends AbstractOWLViewComponent {
 		this.setLayout(new FlowLayout());
 		bobPanel = new BobPanel();
 		this.add(bobPanel);
-		Gate.setGateHome(new File(System.getProperty("user.dir")));		
-		Gate.setSiteConfigFile(new File("/home/jdb/bin/gate-7.0-build4195-ALL/gate.xml"));
+		System.setProperty(
+				"gate.home",
+				"/home/jdb/thesis/sw_originals/gate-7.0-build4195-ALL/gate-7.0-build4195-ALL/");
+		System.setProperty(
+				"gate.plugins.home",
+				"/home/jdb/thesis/sw_originals/gate-7.0-build4195-ALL/gate-7.0-build4195-ALL/plugins");
+		Gate.setSiteConfigFile(new File("/home/jdb/thesis/sw_originals/gate-7.0-build4195-ALL/gate-7.0-build4195-ALL/gate.xml"));
 		Gate.init();
 	}
 
