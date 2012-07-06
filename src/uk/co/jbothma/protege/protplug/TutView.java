@@ -4,6 +4,7 @@ import gate.Gate;
 
 import java.awt.FlowLayout;
 import java.awt.LayoutManager;
+import java.io.File;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -26,6 +27,8 @@ public class TutView extends AbstractOWLViewComponent {
 		this.setLayout(new FlowLayout());
 		bobPanel = new BobPanel();
 		this.add(bobPanel);
+		Gate.setGateHome(new File(System.getProperty("user.dir")));		
+		Gate.setSiteConfigFile(new File("/home/jdb/bin/gate-7.0-build4195-ALL/gate.xml"));
 		Gate.init();
 	}
 

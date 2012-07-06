@@ -25,22 +25,22 @@ public class BobPanel extends JPanel {
 	public BobPanel() {
 		//final JPanel panel = this;
 		
-		JButton btnNewOntologyLearning = new JButton("New ontology learning project");
-		btnNewOntologyLearning.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent arg0) {
-				newProject();
-			}
-		});
-		add(btnNewOntologyLearning);
-		
-		JButton btnPopulateFromDirectory = new JButton("Populate from directory");
-		btnPopulateFromDirectory.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				System.out.println("action performed.");
-			}
-		});
-		add(btnPopulateFromDirectory);
+//		JButton btnNewOntologyLearning = new JButton("New ontology learning project");
+//		btnNewOntologyLearning.addMouseListener(new MouseAdapter() {
+//			@Override
+//			public void mouseClicked(MouseEvent arg0) {
+//				newProject();
+//			}
+//		});
+//		add(btnNewOntologyLearning);
+//		
+//		JButton btnPopulateFromDirectory = new JButton("Populate from directory");
+//		btnPopulateFromDirectory.addActionListener(new ActionListener() {
+//			public void actionPerformed(ActionEvent e) {
+//				System.out.println("action performed.");
+//			}
+//		});
+//		add(btnPopulateFromDirectory);
 	}
 	
 	private void newProject() {
