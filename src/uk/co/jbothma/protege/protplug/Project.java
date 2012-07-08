@@ -153,10 +153,10 @@ public class Project {
 
 		if (file.isDirectory()) {
 			// Application consists of loose class files
-			return file;
+			return file.getParentFile();
 		} else {
 			// Application is packaged in a JAR file
-			return file.getParentFile();
+			return file.getParentFile().getParentFile();
 		}
 	}
 }
