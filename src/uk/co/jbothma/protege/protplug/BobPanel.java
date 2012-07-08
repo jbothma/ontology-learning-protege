@@ -43,6 +43,20 @@ public class BobPanel extends JPanel {
 			}
 		});
 		add(btnPopulateFromDirectory);
+		
+		JButton btnPreprocess = new JButton("Preprocess");
+		btnPreprocess.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				try {
+					project.preprocess();
+				} catch (PersistenceException | ResourceInstantiationException
+						| IOException | SecurityException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		});
+		add(btnPreprocess);
 	}
 	
 	private void newProject() {
