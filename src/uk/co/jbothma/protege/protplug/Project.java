@@ -1,16 +1,19 @@
 package uk.co.jbothma.protege.protplug;
 
 import gate.Corpus;
+import gate.CorpusController;
 import gate.DataStore;
 import gate.Document;
 import gate.Factory;
 import gate.FeatureMap;
 import gate.corpora.SerialCorpusImpl;
+import gate.creole.ExecutionException;
 import gate.creole.ResourceInstantiationException;
 import gate.persist.PersistenceException;
 import gate.persist.SerialDataStore;
 import gate.security.SecurityException;
 import gate.util.ExtensionFileFilter;
+import gate.util.persistence.PersistenceManager;
 
 import java.awt.Component;
 import java.io.BufferedInputStream;
@@ -89,7 +92,7 @@ public class Project {
 		}
 	}
 	
-	public void preprocess() throws PersistenceException, ResourceInstantiationException, IOException, SecurityException {
+	private void doKorpPipeline() throws PersistenceException, ResourceInstantiationException, IOException, SecurityException {
 		korpWorkingDir = new File(projDir.getAbsolutePath() + "/preprocess/korp/");
 		korpWorkingDir.mkdirs();
 		Files.createDirectory(Paths.get(korpWorkingDir.getAbsolutePath()+"/original"));
@@ -98,6 +101,20 @@ public class Project {
 		runKorp();
 		emptyCorpus();
 		importKorpOutput();
+	}
+	
+	public void preprocess() throws PersistenceException, ResourceInstantiationException, IOException, SecurityException, ExecutionException {
+		doKorpPipeline();
+		doJAPE();
+	}
+
+	private void doJAPE() throws PersistenceException, ResourceInstantiationException, IOException, ExecutionException {
+		File gappFile = new File(installDir + "/resources/gate/apps/linguistic-filter/linguistic-filter.gapp");
+		// load the saved application
+		CorpusController application = (CorpusController)
+				PersistenceManager.loadObjectFromFile(gappFile);
+		application.setCorpus(persistCorp);
+		application.execute();
 	}
 
 	private void emptyCorpus() throws PersistenceException, ResourceInstantiationException, SecurityException {
@@ -133,7 +150,7 @@ public class Project {
 	}
 
 	private void installKorpMakefile() throws IOException {
-		Path source = Paths.get(this.installDir + "/resources/korp-Makefile");
+		Path source = Paths.get(this.installDir + "/resources/korp/Makefile");
 		Path target = Paths.get(korpWorkingDir.getAbsolutePath() + "/Makefile");
 		Files.copy(source, target, StandardCopyOption.REPLACE_EXISTING);
 	}

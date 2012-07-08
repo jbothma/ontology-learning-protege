@@ -1,0 +1,11 @@
+Phase: firstpass
+Options: control = appelt
+Input: w
+Rule: LingFilter
+Priority: 20
+(
+  ({w.pos == "JJ"})*
+  ({w.pos == "NN"}|{w.pos == "PM"})+
+): match
+-->
+:match.TermCandidate = {rule= "LingFilter" }

@@ -3,6 +3,7 @@ package uk.co.jbothma.protege.protplug;
 import static org.junit.Assert.*;
 
 import gate.Gate;
+import gate.creole.ExecutionException;
 import gate.creole.ResourceInstantiationException;
 import gate.persist.PersistenceException;
 import gate.security.SecurityException;
@@ -40,7 +41,7 @@ public class Tests {
 	}
 	
 	@Test
-	public void testPreprocess() throws PersistenceException, ResourceInstantiationException, SecurityException, IOException {
+	public void testPreprocess() throws PersistenceException, ResourceInstantiationException, SecurityException, IOException, ExecutionException {
 		project.preprocess();
 	}
 

@@ -1,5 +1,6 @@
 package uk.co.jbothma.protege.protplug;
 
+import gate.creole.ExecutionException;
 import gate.creole.ResourceInstantiationException;
 import gate.persist.PersistenceException;
 import gate.security.SecurityException;
@@ -50,7 +51,7 @@ public class BobPanel extends JPanel {
 				try {
 					project.preprocess();
 				} catch (PersistenceException | ResourceInstantiationException
-						| IOException | SecurityException e) {
+						| IOException | SecurityException | ExecutionException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
