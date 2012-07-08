@@ -19,6 +19,7 @@ import org.junit.Test;
 
 public class Tests {
 	Project project;
+	File projDir = null;
 	
 	private File makeProjDir() throws IOException {
 		File dir = File.createTempFile(
@@ -41,13 +42,13 @@ public class Tests {
 		Gate.init();
 		Gate.getCreoleRegister().registerDirectories(
 				new File("/home/jdb/bin/gate-7.0-build4195-ALL/plugins/ANNIE").toURI().toURL());
-		File projDir = makeProjDir();
-		project = new Project(projDir);
-		project.populateFromDir("/home/jdb/protplug/1", "pdf", false);
+		projDir = makeProjDir();
 	}
 	
 	@Test
-	public void testPreprocess() throws PersistenceException, ResourceInstantiationException, SecurityException, IOException, ExecutionException {
+	public void testTypicalFlow() throws PersistenceException, ResourceInstantiationException, SecurityException, IOException, ExecutionException {
+		project = new Project(projDir);
+		project.populateFromDir("/home/jdb/protplug/1", "pdf", false);
 		project.preprocess();
 	}
 

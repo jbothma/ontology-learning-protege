@@ -68,45 +68,33 @@ public class Project {
 		sds.sync(persistCorp);
 	}
 	
-	private void dumpXML() throws PersistenceException, ResourceInstantiationException, IOException {
-		FeatureMap docFeatures;
-		Document doc;
-		
-		
-		for (Object docID : sds.getLrIds("gate.corpora.DocumentImpl")) {
-			// OPEN DOCUMENT
-			docFeatures = Factory.newFeatureMap();
-			docFeatures.put(DataStore.LR_ID_FEATURE_NAME, docID);
-			docFeatures.put(DataStore.DATASTORE_FEATURE_NAME, sds);
-			doc = (gate.Document)
-					Factory.createResource("gate.corpora.DocumentImpl", docFeatures);
-			
-			FileWriter fstream = new FileWriter(korpWorkingDir.getAbsolutePath() + "/original/" + doc.getName() + ".xml");
-			BufferedWriter out = new BufferedWriter(fstream);
-			out.write(doc.toXml(null, true));
-			out.close();
-			
-			// CLOSE DOCUMENT
-			persistCorp.unloadDocument(doc, false);
-			Factory.deleteResource(doc);
-		}
-	}
-	
-	private void doKorpPipeline() throws PersistenceException, ResourceInstantiationException, IOException, SecurityException {
-		korpWorkingDir = new File(projDir.getAbsolutePath() + "/preprocess/korp/");
-		korpWorkingDir.mkdirs();
-		Files.createDirectory(Paths.get(korpWorkingDir.getAbsolutePath()+"/original"));
-		dumpXML();
-		installKorpMakefile();
-		runKorp();
-		emptyCorpus();
-		importKorpOutput();
-	}
-	
 	public void preprocess() throws PersistenceException, ResourceInstantiationException, IOException, SecurityException, ExecutionException {
 		doKorpPipeline();
 		doJAPE();
 	}
+	
+	/**
+	 * http://www.onyxbits.de/content/wherami-locating-installation-directory-your-java-application
+	 */
+	public static File installedDir() {
+		URL url = Project.class.getProtectionDomain().getCodeSource()
+				.getLocation();
+		File file = null;
+		try {
+			file = new File(url.toURI());
+		} catch (URISyntaxException e) {
+			// Let's trust the JDK to get it rigth.
+		}
+
+		if (file.isDirectory()) {
+			// Application consists of loose class files
+			return file.getParentFile();
+		} else {
+			// Application is packaged in a JAR file
+			return file.getParentFile().getParentFile();
+		}
+	}
+
 
 	private void doJAPE() throws PersistenceException, ResourceInstantiationException, IOException, ExecutionException {
 		File[] gapps = new File[] {
@@ -147,7 +135,8 @@ public class Project {
         BufferedReader reader = new BufferedReader(tempReader);
 		String line;
 		while ((line = reader.readLine()) != null){
-			System.out.println("korp: " + line);
+			if (line.contains("Exported"))
+				System.out.println("korp: " + line);
 		}
 
 		reader.close();
@@ -159,26 +148,40 @@ public class Project {
 		Path target = Paths.get(korpWorkingDir.getAbsolutePath() + "/Makefile");
 		Files.copy(source, target, StandardCopyOption.REPLACE_EXISTING);
 	}
-	
-	/**
-	 * http://www.onyxbits.de/content/wherami-locating-installation-directory-your-java-application
-	 */
-	public static File installedDir() {
-		URL url = Project.class.getProtectionDomain().getCodeSource()
-				.getLocation();
-		File file = null;
-		try {
-			file = new File(url.toURI());
-		} catch (URISyntaxException e) {
-			// Let's trust the JDK to get it rigth.
-		}
 
-		if (file.isDirectory()) {
-			// Application consists of loose class files
-			return file.getParentFile();
-		} else {
-			// Application is packaged in a JAR file
-			return file.getParentFile().getParentFile();
+	
+	private void dumpXML() throws PersistenceException, ResourceInstantiationException, IOException {
+		FeatureMap docFeatures;
+		Document doc;
+		
+		
+		for (Object docID : sds.getLrIds("gate.corpora.DocumentImpl")) {
+			// OPEN DOCUMENT
+			docFeatures = Factory.newFeatureMap();
+			docFeatures.put(DataStore.LR_ID_FEATURE_NAME, docID);
+			docFeatures.put(DataStore.DATASTORE_FEATURE_NAME, sds);
+			doc = (gate.Document)
+					Factory.createResource("gate.corpora.DocumentImpl", docFeatures);
+			
+			FileWriter fstream = new FileWriter(korpWorkingDir.getAbsolutePath() + "/original/" + doc.getName() + ".xml");
+			BufferedWriter out = new BufferedWriter(fstream);
+			out.write(doc.toXml(null, true));
+			out.close();
+			
+			// CLOSE DOCUMENT
+			persistCorp.unloadDocument(doc, false);
+			Factory.deleteResource(doc);
 		}
+	}
+	
+	private void doKorpPipeline() throws PersistenceException, ResourceInstantiationException, IOException, SecurityException {
+		korpWorkingDir = new File(projDir.getAbsolutePath() + "/preprocess/korp/");
+		korpWorkingDir.mkdirs();
+		Files.createDirectory(Paths.get(korpWorkingDir.getAbsolutePath()+"/original"));
+		dumpXML();
+		installKorpMakefile();
+		runKorp();
+		emptyCorpus();
+		importKorpOutput();
 	}
 }
