@@ -109,12 +109,17 @@ public class Project {
 	}
 
 	private void doJAPE() throws PersistenceException, ResourceInstantiationException, IOException, ExecutionException {
-		File gappFile = new File(installDir + "/resources/gate/apps/linguistic-filter/linguistic-filter.gapp");
-		// load the saved application
-		CorpusController application = (CorpusController)
-				PersistenceManager.loadObjectFromFile(gappFile);
-		application.setCorpus(persistCorp);
-		application.execute();
+		File[] gapps = new File[] {
+				new File(installDir + "/resources/gate/apps/linguistic-filter/linguistic-filter.gapp"),
+				new File(installDir + "/resources/gate/apps/subclass_relation_candidates/subclass_relation_candidates.gapp"),
+		};
+		
+		for (File gapp : gapps) {
+			CorpusController application = (CorpusController)
+					PersistenceManager.loadObjectFromFile(gapp);
+			application.setCorpus(persistCorp);
+			application.execute();
+		}
 	}
 
 	private void emptyCorpus() throws PersistenceException, ResourceInstantiationException, SecurityException {
@@ -158,8 +163,8 @@ public class Project {
 	/**
 	 * http://www.onyxbits.de/content/wherami-locating-installation-directory-your-java-application
 	 */
-	private File installedDir() {
-		URL url = this.getClass().getProtectionDomain().getCodeSource()
+	public static File installedDir() {
+		URL url = Project.class.getProtectionDomain().getCodeSource()
 				.getLocation();
 		File file = null;
 		try {

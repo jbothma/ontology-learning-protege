@@ -11,6 +11,8 @@ import gate.util.GateException;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -19,7 +21,9 @@ public class Tests {
 	Project project;
 	
 	private File makeProjDir() throws IOException {
-		File dir = File.createTempFile(this.toString(),"");
+		File dir = File.createTempFile(
+				"ProtegeOLTests",
+				"_" + new SimpleDateFormat("yyyy-MM-dd:HH:mm:ss").format(new Date()));
 		assertTrue(dir.delete());
 		assertTrue(dir.mkdirs());
 		return dir;
@@ -35,6 +39,8 @@ public class Tests {
 				"/home/jdb/thesis/sw_originals/gate-7.0-build4195-ALL/gate-7.0-build4195-ALL/plugins");
 		Gate.setSiteConfigFile(new File("/home/jdb/thesis/sw_originals/gate-7.0-build4195-ALL/gate-7.0-build4195-ALL/gate.xml"));
 		Gate.init();
+		Gate.getCreoleRegister().registerDirectories(
+				new File("/home/jdb/bin/gate-7.0-build4195-ALL/plugins/ANNIE").toURI().toURL());
 		File projDir = makeProjDir();
 		project = new Project(projDir);
 		project.populateFromDir("/home/jdb/protplug/1", "pdf", false);

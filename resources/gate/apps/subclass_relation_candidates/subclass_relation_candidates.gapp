@@ -34,7 +34,7 @@
             </localMap>
           </runtimeParams>
           <resourceType>gate.creole.Transducer</resourceType>
-          <resourceName>linguistic filter</resourceName>
+          <resourceName>subclass-relation-candidates</resourceName>
           <initParams class="gate.util.persistence.MapPersistence">
             <mapType>gate.util.SimpleFeatureMapImpl</mapType>
             <localMap>
@@ -53,7 +53,7 @@
               <entry>
                 <string>grammarURL</string>
                 <gate.util.persistence.PersistenceManager-URLHolder>
-                  <urlString>$relpath$linguistic-filter.jape</urlString>
+                  <urlString>$relpath$subclass_relation_candidates.jape</urlString>
                 </gate.util.persistence.PersistenceManager-URLHolder>
               </entry>
               <entry>
@@ -71,7 +71,7 @@
       <collectionType>java.util.ArrayList</collectionType>
     </prList>
     <resourceType>gate.creole.SerialAnalyserController</resourceType>
-    <resourceName>linguistic-filter</resourceName>
+    <resourceName>subclass-relation-candidates</resourceName>
     <initParams class="gate.util.persistence.MapPersistence">
       <mapType>gate.util.SimpleFeatureMapImpl</mapType>
       <localMap/>
