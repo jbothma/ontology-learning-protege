@@ -50,6 +50,8 @@ public class Tests {
 		project = new Project(projDir);
 		project.populateFromDir("/home/jdb/protplug/1", "pdf", false);
 		project.preprocess();
+		project.extractElements();
+		System.out.println(project.getTermCandidates());
 	}
 
 }
