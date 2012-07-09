@@ -2,10 +2,13 @@ package uk.co.jbothma.protege.protplug;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
@@ -17,20 +20,10 @@ import com.jgoodies.forms.factories.FormFactory;
 import com.jgoodies.forms.layout.ColumnSpec;
 import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.RowSpec;
-import javax.swing.JCheckBox;
-import java.awt.event.FocusAdapter;
-import java.awt.event.FocusEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeEvent;
 
 public class PopulateFromDirDialog extends JDialog {
-	private String directory;
-	private String extension;
-	private Boolean recurse;
+	private static final long serialVersionUID = -7977902798588120848L;
 	private Boolean ok = false;
-	private JDialog dialog; 
 	private final JPanel contentPanel = new JPanel();
 	private JTextField txtDir;
 	private JTextField txtExtension;
@@ -72,11 +65,6 @@ public class PopulateFromDirDialog extends JDialog {
 		}
 		{
 			txtDir = new JTextField();
-			txtDir.addPropertyChangeListener(new PropertyChangeListener() {
-				public void propertyChange(PropertyChangeEvent arg0) {
-					directory = txtDir.getText();
-				}
-			});
 			contentPanel.add(txtDir, "4, 2, fill, default");
 			txtDir.setColumns(10);
 		}

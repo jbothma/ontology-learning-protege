@@ -52,28 +52,43 @@ import uk.co.jbothma.terms.CValueSess;
 import uk.co.jbothma.terms.Candidate;
 
 public class Project {
-	private File projDir, korpWorkingDir = null;
-	private String dsDir, projName, installDir;
+	private File projDir, dsDir, korpWorkingDir = null;
+	private String projName, installDir;
 	private SerialDataStore sds;
 	private SerialCorpusImpl persistCorp;
 	private ArrayList<TermCandidate> termCandidates;
+	private String corpName;
 
 	public Project(File projDir)
 			throws PersistenceException, UnsupportedOperationException, ResourceInstantiationException,
-			SecurityException {
-		this.projDir = projDir;
+			SecurityException, MalformedURLException 
+	{
 		this.installDir = "/home/jdb/thesis/workspace/ProtegePlugin";
-		// this way differs between running in EUnit and running inside protege inside eclipse
-		//this.installDir = this.installedDir().getAbsolutePath();
-		dsDir = "file://" + projDir.getAbsolutePath() + "/GATESerialDatastore";
+	
+		if (!projDir.exists()) {
+			projDir.mkdirs();
+		}
+		this.projDir = projDir;
+		dsDir = new File(projDir.getAbsolutePath() + "/GATESerialDatastore");
 		projName = projDir.getName();
+		corpName = "ProtegeOLProj_" + projName;
 		
-		sds = (SerialDataStore) Factory.createDataStore(
-				"gate.persist.SerialDataStore", dsDir);
+		if (dsDir.exists()) {
+			sds = new SerialDataStore("file://"+dsDir);
+			sds.open();
+			
+			FeatureMap corpFeatures = Factory.newFeatureMap();
+			corpFeatures.put(DataStore.LR_ID_FEATURE_NAME, sds.getLrIds("gate.corpora.SerialCorpusImpl").get(0));
+			corpFeatures.put(DataStore.DATASTORE_FEATURE_NAME, sds);
+			persistCorp = (SerialCorpusImpl)Factory.createResource("gate.corpora.SerialCorpusImpl", corpFeatures);
+		} else {
+			sds = (SerialDataStore) Factory.createDataStore(
+				"gate.persist.SerialDataStore", dsDir.getAbsolutePath());
 
-		Corpus corp = Factory.newCorpus("ProtegeOLProj_" + projName);
-		persistCorp = (SerialCorpusImpl) sds.adopt(corp, null);
-		sds.sync(persistCorp);
+			Corpus corp = Factory.newCorpus(corpName);
+			persistCorp = (SerialCorpusImpl) sds.adopt(corp, null);
+			sds.sync(persistCorp);
+		}
 		
 		termCandidates = new ArrayList<TermCandidate>();
 	}
@@ -94,30 +109,12 @@ public class Project {
 		doCValue();
 	}
 	
-//	/**
-//	 * http://www.onyxbits.de/content/wherami-locating-installation-directory-your-java-application
-//	 */
-//	public static File installedDir() {
-//		URL url = Project.class.getProtectionDomain().getCodeSource()
-//				.getLocation();
-//		File file = null;
-//		try {
-//			file = new File(url.toURI());
-//		} catch (URISyntaxException e) {
-//			// Let's trust the JDK to get it rigth.
-//		}
-//
-//		if (file.isDirectory()) {
-//			// Application consists of loose class files
-//			return file.getParentFile();
-//		} else {
-//			// Application is packaged in a JAR file
-//			return file.getParentFile().getParentFile();
-//		}
-//	}
-
 	public ArrayList<TermCandidate> getTermCandidates() {
 		return termCandidates;
+	}
+	
+	public void close() throws PersistenceException {
+		sds.close();
 	}
 	
 	private void doCValue() {
@@ -126,7 +123,6 @@ public class Project {
 		Document doc;
 		while (docIter.hasNext()) {
 			doc = docIter.next();
-			System.out.println(doc.getName() + " " + doc.getAnnotations());
 
 			String inputASName = "Original markups";
 			String inputASType = "TermCandidate";
@@ -293,5 +289,16 @@ public class Project {
 		public String toString() { return term + " " + confidence; }		
 		public String getTerm() { return term; }
 		public float getConfidence() { return confidence; }
+	}
+
+	public void exportTermsToCSV(File exportToFile) throws IOException {
+		BufferedWriter writer = new BufferedWriter(new FileWriter(exportToFile));
+		writer.write("Term,Confidence");
+		writer.newLine();
+		for (TermCandidate cand : termCandidates) {
+			writer.write(cand.getTerm().replaceAll(",", "") + "," + cand.getConfidence());
+			writer.newLine();
+		}
+		writer.close();
 	}
 }

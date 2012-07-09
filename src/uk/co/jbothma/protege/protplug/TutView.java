@@ -3,35 +3,34 @@ package uk.co.jbothma.protege.protplug;
 import gate.Gate;
 import gate.util.GateException;
 
-import java.awt.FlowLayout;
-import java.awt.LayoutManager;
+import java.awt.BorderLayout;
 import java.io.File;
 import java.net.MalformedURLException;
 
-import javax.swing.BoxLayout;
-import javax.swing.JButton;
-import javax.swing.JPanel;
 import javax.swing.SwingWorker;
 
 import org.protege.editor.owl.ui.view.AbstractOWLViewComponent;
 
 public class TutView extends AbstractOWLViewComponent {
+	public TutView() {
+	}
 	BobPanel bobPanel;
 	
 	private static final long serialVersionUID = 866185983362791061L;
 
 	@Override
 	protected void disposeOWLView() {
-		
+		bobPanel.cleanup();
 	}
 
 	@Override
 	protected void initialiseOWLView() throws Exception {
-		this.setLayout(new FlowLayout());
+		this.setLayout(new BorderLayout());
 		bobPanel = new BobPanel();
-		this.add(bobPanel);
+        add(bobPanel);
+        bobPanel.setMaximumSize(this.getSize());
 		
-		SwingWorker worker = new SwingWorker<Void, Void>() {
+		SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
 		    @Override
 		    public Void doInBackground() {				    	
 		    	System.setProperty(

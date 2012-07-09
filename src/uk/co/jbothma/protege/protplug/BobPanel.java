@@ -5,25 +5,21 @@ import gate.creole.ResourceInstantiationException;
 import gate.persist.PersistenceException;
 import gate.security.SecurityException;
 
-import javax.swing.JDialog;
-import javax.swing.JFileChooser;
-import javax.swing.JPanel;
-import javax.swing.JButton;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.SwingWorker;
-
-import java.awt.Component;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.FlowLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
-import javax.swing.JTextPane;
 
-import uk.co.jbothma.protege.protplug.Project.TermCandidate;
+import javax.swing.JButton;
+import javax.swing.JFileChooser;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.JTextPane;
+import javax.swing.SwingWorker;
+import javax.swing.filechooser.FileFilter;
 
 public class BobPanel extends JPanel {
 	private static final long serialVersionUID = -7832128279921728175L;
@@ -31,22 +27,22 @@ public class BobPanel extends JPanel {
 	private JButton btnPreprocess, btnNewOntologyLearning, btnPopulateFromDirectory, btnExtractCandidates;
 	private JTextPane textPane;
 	private JTable termCandTable;
+	private JButton btnExportTerms;
 
 	/**
 	 * Create the panel.
 	 */
 	public BobPanel() {
 		btnNewOntologyLearning = new JButton("New ontology learning project");
-		btnNewOntologyLearning.setEnabled(false);
 		btnNewOntologyLearning.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				newProject();
 			}
 		});
+		setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
 		add(btnNewOntologyLearning);
 		
 		btnPopulateFromDirectory = new JButton("Populate from directory");
-		btnPopulateFromDirectory.setEnabled(false);
 		btnPopulateFromDirectory.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				populateFromDir();
@@ -55,10 +51,9 @@ public class BobPanel extends JPanel {
 		add(btnPopulateFromDirectory);
 		
 		btnPreprocess = new JButton("Preprocess");
-		btnPreprocess.setEnabled(false);
 		btnPreprocess.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				SwingWorker worker = new SwingWorker<Void, Void>() {
+				SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
 				    @Override
 				    public Void doInBackground() {
 				    	try {
@@ -92,10 +87,9 @@ public class BobPanel extends JPanel {
 		add(btnPreprocess);
 		
 		btnExtractCandidates = new JButton("Extract candidates");
-		btnExtractCandidates.setEnabled(false);
 		btnExtractCandidates.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				SwingWorker worker = new SwingWorker<Void, Void>() {
+				SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
 				    @Override
 				    public Void doInBackground() {				    	
 						project.extractElements();
@@ -126,9 +120,60 @@ public class BobPanel extends JPanel {
 		});
 		add(btnExtractCandidates);
 		
+		btnExportTerms = new JButton("Export terms");
+		btnExportTerms.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				JFileChooser chooser = new JFileChooser();
+				chooser.setCurrentDirectory(new java.io.File("."));
+				chooser.setDialogTitle("Export terms to file");
+				FileFilter filter = new FileFilter() {
+				    public boolean accept(File file) {
+				        String filename = file.getName();
+				        return filename.endsWith(".csv");
+				    }
+				    public String getDescription() {
+				        return "*.csv";
+				    }
+				};
+				chooser.addChoosableFileFilter(filter);
+				chooser.setAcceptAllFileFilterUsed(false);
+				if (chooser.showSaveDialog(BobPanel.this) == JFileChooser.APPROVE_OPTION) {
+					final File exportToFile = chooser.getSelectedFile();
+					SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
+					    @Override
+					    public Void doInBackground() {
+							try {
+								project.exportTermsToCSV(exportToFile);
+							} catch (IOException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+							return null;
+					    }
+
+					    @Override
+					    public void done() {
+					    	try {
+					            get();
+					        } catch (InterruptedException ignore) {}
+					        catch (java.util.concurrent.ExecutionException e) {
+					        	e.printStackTrace();
+					        }
+					    	setButtonsEnabled(true);
+					    }
+					};
+					setButtonsEnabled(false);
+					worker.execute();
+				}
+			}
+		});
+		add(btnExportTerms);
+		
 		textPane = new JTextPane();
 		textPane.setEditable(false);
 		add(textPane);
+		
+		setButtonsEnabled(false);
 	}
 	
 	public void initialized() {
@@ -136,7 +181,7 @@ public class BobPanel extends JPanel {
 	}
 	
 	private void newProject() {
-		File projDir;
+		final File projDir;
 		// Select directory code from http://www.rgagnon.com/javadetails/java-0370.html
 		JFileChooser chooser;
 		String choosertitle = "Choose an empty directory for this project.";
@@ -149,14 +194,34 @@ public class BobPanel extends JPanel {
 		chooser.setAcceptAllFileFilterUsed(false);
 		if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
 			projDir = chooser.getSelectedFile();
-			try {
-				project = new Project(projDir);
-		        textPane.setText(textPane.getText()+"Created project in " + projDir);
-			} catch (PersistenceException | UnsupportedOperationException
-					| ResourceInstantiationException | SecurityException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+
+			SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
+			    @Override
+			    public Void doInBackground() {
+					try {
+						project = new Project(projDir);
+				        textPane.setText(textPane.getText()+"Created project in " + projDir);
+					} catch (PersistenceException | UnsupportedOperationException
+							| ResourceInstantiationException | SecurityException | MalformedURLException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					return null;
+			    }
+
+			    @Override
+			    public void done() {
+			    	try {
+			            get();
+			        } catch (InterruptedException ignore) {}
+			        catch (java.util.concurrent.ExecutionException e) {
+			        	e.printStackTrace();
+			        }
+			    	setButtonsEnabled(true);
+			    }
+			};
+			setButtonsEnabled(false);
+			worker.execute();
 		} else {
 			
 		}		
@@ -170,7 +235,7 @@ public class BobPanel extends JPanel {
 			final String extension = dialog.getExtension();
 			final Boolean recurse = dialog.getRecurse();
 			
-			SwingWorker worker = new SwingWorker<Void, Void>() {
+			SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
 			    @Override
 			    public Void doInBackground() {
 			    	try {
@@ -205,9 +270,20 @@ public class BobPanel extends JPanel {
 			btnNewOntologyLearning, 
 			btnPopulateFromDirectory,
 			btnExtractCandidates,
+			btnExportTerms,
 		};
 		for (JButton button : buttons) {
 			button.setEnabled(value);
+		}
+	}
+
+	public void cleanup() {
+		try {
+			if (project != null)
+				project.close();
+		} catch (PersistenceException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 }
