@@ -56,7 +56,7 @@ public class Project {
 	private String dsDir, projName, installDir;
 	private SerialDataStore sds;
 	private SerialCorpusImpl persistCorp;
-	private Collection<TermCandidate> termCandidates;
+	private ArrayList<TermCandidate> termCandidates;
 
 	public Project(File projDir)
 			throws PersistenceException, UnsupportedOperationException, ResourceInstantiationException,
@@ -75,7 +75,7 @@ public class Project {
 		persistCorp = (SerialCorpusImpl) sds.adopt(corp, null);
 		sds.sync(persistCorp);
 		
-		termCandidates = new HashSet<TermCandidate>();
+		termCandidates = new ArrayList<TermCandidate>();
 	}
 
 	public void populateFromDir(String populateDir, String extensionFilter,	Boolean recurseDirectories)
@@ -116,7 +116,7 @@ public class Project {
 //		}
 //	}
 
-	public Collection<TermCandidate> getTermCandidates() {
+	public ArrayList<TermCandidate> getTermCandidates() {
 		return termCandidates;
 	}
 	

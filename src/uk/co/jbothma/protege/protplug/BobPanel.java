@@ -9,6 +9,8 @@ import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JPanel;
 import javax.swing.JButton;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
 import javax.swing.SwingWorker;
 
 import java.awt.Component;
@@ -25,9 +27,10 @@ import uk.co.jbothma.protege.protplug.Project.TermCandidate;
 
 public class BobPanel extends JPanel {
 	private static final long serialVersionUID = -7832128279921728175L;
-	Project project = null;
-	JButton btnPreprocess, btnNewOntologyLearning, btnPopulateFromDirectory, btnExtractCandidates;
+	private Project project = null;
+	private JButton btnPreprocess, btnNewOntologyLearning, btnPopulateFromDirectory, btnExtractCandidates;
 	private JTextPane textPane;
+	private JTable termCandTable;
 
 	/**
 	 * Create the panel.
@@ -96,7 +99,6 @@ public class BobPanel extends JPanel {
 				    @Override
 				    public Void doInBackground() {				    	
 						project.extractElements();
-						System.out.println("term cands: "+project.getTermCandidates().size());
 						return null;
 				    }
 
@@ -111,11 +113,10 @@ public class BobPanel extends JPanel {
 				    	setButtonsEnabled(true);
 				        textPane.setText(textPane.getText()+"\nextraction finished.");
 				        textPane.setText(textPane.getText()+"\n"+project.getTermCandidates().size()+" terms");
-				        String candStr = "";
-				        for (TermCandidate cand : project.getTermCandidates()) {
-				        	candStr += cand + "\n";
-				        }
-				        textPane.setText(textPane.getText()+"\n"+candStr);
+				        
+				        termCandTable = new JTable(new TermCandidateTableModel(project.getTermCandidates()));
+				        JScrollPane scrollPane = new JScrollPane(termCandTable);
+				        add(scrollPane);
 				    }
 				};
 				setButtonsEnabled(false);
