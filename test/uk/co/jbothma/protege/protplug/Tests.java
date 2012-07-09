@@ -53,6 +53,7 @@ public class Tests {
 		project.preprocess();
 		project.extractElements();
 		assertTrue(project.getTermCandidates().size()>0);
+		assertTrue(project.getSubclassRelationCandidates().size()>0);
 	}
 
 	@Test

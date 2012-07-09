@@ -90,7 +90,9 @@ public class BobPanel extends JPanel {
 		btnExtractCandidates.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
-				    @Override
+				    private JTable subclassCandTable;
+
+					@Override
 				    public Void doInBackground() {				    	
 						project.extractElements();
 						return null;
@@ -107,10 +109,13 @@ public class BobPanel extends JPanel {
 				    	setButtonsEnabled(true);
 				        textPane.setText(textPane.getText()+"\nextraction finished.");
 				        textPane.setText(textPane.getText()+"\n"+project.getTermCandidates().size()+" terms");
-				        
+
 				        termCandTable = new JTable(new TermCandidateTableModel(project.getTermCandidates()));
-				        JScrollPane scrollPane = new JScrollPane(termCandTable);
-				        add(scrollPane);
+				        add(new JScrollPane(termCandTable));
+				        
+				        subclassCandTable = new JTable(
+				        		new SubclassRelationCandidateTableModel(project.getSubclassRelationCandidates()));
+				        add(new JScrollPane(subclassCandTable));
 				    }
 				};
 				setButtonsEnabled(false);

@@ -12,6 +12,7 @@ import gate.Utils;
 import gate.corpora.SerialCorpusImpl;
 import gate.creole.ExecutionException;
 import gate.creole.ResourceInstantiationException;
+import gate.gui.ontology.SubClassAction;
 import gate.persist.PersistenceException;
 import gate.persist.SerialDataStore;
 import gate.security.SecurityException;
@@ -58,6 +59,7 @@ public class Project {
 	private SerialDataStore sds;
 	private SerialCorpusImpl persistCorp;
 	private ArrayList<TermCandidate> termCandidates;
+	private ArrayList<SubclassRelationCandidate> subclassRelCandidates;
 	private String corpName;
 
 	public Project(File projDir)
@@ -90,8 +92,9 @@ public class Project {
 			persistCorp = (SerialCorpusImpl) sds.adopt(corp, null);
 			sds.sync(persistCorp);
 		}
-		
+
 		termCandidates = new ArrayList<TermCandidate>();
+		subclassRelCandidates = new ArrayList<SubclassRelationCandidate>();
 	}
 
 	public void populateFromDir(String populateDir, String extensionFilter,	Boolean recurseDirectories)
@@ -113,6 +116,10 @@ public class Project {
 	
 	public ArrayList<TermCandidate> getTermCandidates() {
 		return termCandidates;
+	}
+	
+	public ArrayList<SubclassRelationCandidate> getSubclassRelationCandidates() {
+		return subclassRelCandidates;
 	}
 	
 	public void close() throws PersistenceException {
@@ -147,7 +154,7 @@ public class Project {
 				String superclass = superclass(inputAS, relationAnnot);
 				Set<String> subclasses = subclasses(inputAS, relationAnnot);
 				for (String subclass : subclasses) {
-					System.out.println(superclass + " <--- " + subclass);
+					subclassRelCandidates.add(new SubclassRelationCandidate(subclass, superclass));
 				}
 			}
 			
@@ -362,5 +369,19 @@ public class Project {
 		public String toString() { return term + " " + confidence; }		
 		public String getTerm() { return term; }
 		public float getConfidence() { return confidence; }
+	}
+	
+	public class SubclassRelationCandidate {
+		private String domain;
+		private String range;
+
+		public SubclassRelationCandidate(String domain, String range) {
+			this.domain = domain;
+			this.range = range;
+		}
+		
+		public String toString() { return domain + " subclassOf " + range; }		
+		public String getDomain() { return domain; }		
+		public String getRange() { return range; }
 	}
 }
