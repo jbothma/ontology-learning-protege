@@ -11,6 +11,7 @@ import gate.util.GateException;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -23,8 +24,8 @@ public class Tests {
 	
 	private File makeProjDir() throws IOException {
 		File dir = File.createTempFile(
-				"ProtegeOLTests",
-				"_" + new SimpleDateFormat("yyyy-MM-dd:HH:mm:ss").format(new Date()));
+				"ProtegeOLTests"+
+				"_" + new SimpleDateFormat("yyyy-MM-dd:HH:mm:ss").format(new Date())+".","");
 		assertTrue(dir.delete());
 		assertTrue(dir.mkdirs());
 		return dir;
@@ -51,7 +52,19 @@ public class Tests {
 		project.populateFromDir("/home/jdb/protplug/1", "pdf", false);
 		project.preprocess();
 		project.extractElements();
-		System.out.println(project.getTermCandidates());
+		assertTrue(project.getTermCandidates().size()>0);
 	}
 
+	@Test
+	public void testExistingProject() throws PersistenceException, UnsupportedOperationException, ResourceInstantiationException, SecurityException, MalformedURLException {
+		project = new Project(new File("/home/jdb/protplug/1project"));
+		project.extractElements();
+		assertTrue(project.getTermCandidates().size()>0);
+	}
+	
+	@Test
+	public void printASNames() throws PersistenceException, UnsupportedOperationException, ResourceInstantiationException, SecurityException, MalformedURLException {
+		project = new Project(new File("/home/jdb/protplug/1project"));
+		project.printAnnotationSetsNames();
+	}
 }

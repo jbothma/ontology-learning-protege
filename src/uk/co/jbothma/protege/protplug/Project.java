@@ -43,6 +43,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import javax.swing.JFileChooser;
 import javax.swing.JPanel;
@@ -83,7 +84,7 @@ public class Project {
 			persistCorp = (SerialCorpusImpl)Factory.createResource("gate.corpora.SerialCorpusImpl", corpFeatures);
 		} else {
 			sds = (SerialDataStore) Factory.createDataStore(
-				"gate.persist.SerialDataStore", dsDir.getAbsolutePath());
+				"gate.persist.SerialDataStore", "file://"+dsDir.getAbsolutePath());
 
 			Corpus corp = Factory.newCorpus(corpName);
 			persistCorp = (SerialCorpusImpl) sds.adopt(corp, null);
@@ -107,6 +108,7 @@ public class Project {
 	
 	public void extractElements() {
 		doCValue();
+		doSubclassAnnCands();
 	}
 	
 	public ArrayList<TermCandidate> getTermCandidates() {
@@ -115,6 +117,77 @@ public class Project {
 	
 	public void close() throws PersistenceException {
 		sds.close();
+	}
+
+	public void exportTermsToCSV(File exportToFile) throws IOException {
+		BufferedWriter writer = new BufferedWriter(new FileWriter(exportToFile));
+		writer.write("Term,Confidence");
+		writer.newLine();
+		for (TermCandidate cand : termCandidates) {
+			writer.write(cand.getTerm().replaceAll(",", "") + "," + cand.getConfidence());
+			writer.newLine();
+		}
+		writer.close();
+	}
+
+	private void doSubclassAnnCands() {
+		Iterator<Document> docIter = persistCorp.iterator();
+		Document doc;
+		while (docIter.hasNext()) {
+			doc = docIter.next();
+			
+			String inputASName = "Original markups";
+			AnnotationSet inputAS = doc.getAnnotations(inputASName);
+			
+			String relationASType = "SubclassOf";
+			Iterator<Annotation> relationIter = inputAS.get(relationASType).iterator();
+			
+			while (relationIter.hasNext()) {
+				Annotation relationAnnot = (Annotation) relationIter.next();
+				String superclass = superclass(inputAS, relationAnnot);
+				Set<String> subclasses = subclasses(inputAS, relationAnnot);
+				for (String subclass : subclasses) {
+					System.out.println(superclass + " <--- " + subclass);
+				}
+			}
+			
+			persistCorp.unloadDocument(doc, false);
+			Factory.deleteResource(doc);
+		}
+	}
+
+	public void printAnnotationSetsNames() {
+		Iterator<Document> docIter = persistCorp.iterator();
+		Document doc;
+		while (docIter.hasNext()) {
+			doc = docIter.next();
+			
+			System.out.println(doc.getName());
+			for (String annotationSetName : doc.getAnnotationSetNames()) {
+				System.out.println(doc.getAnnotations(annotationSetName).getAllTypes());
+			}
+			
+			persistCorp.unloadDocument(doc, false);
+			Factory.deleteResource(doc);
+		}
+	}
+	private static String superclass(AnnotationSet inputAS, Annotation relation) {
+		AnnotationSet superclassAS = inputAS.get("Range");
+		AnnotationSet containedSuperclassAS = Utils.getContainedAnnotations(superclassAS, relation);
+		return Utils.stringFor(inputAS.getDocument(), containedSuperclassAS);
+	}
+
+	private static Set<String> subclasses(AnnotationSet inputAS, Annotation relation) {
+		AnnotationSet subclassAS = inputAS.get("Domain");
+		AnnotationSet termAS = inputAS.get("TermCandidate");
+		AnnotationSet containedSubclassPartAS = Utils.getContainedAnnotations(subclassAS, relation);
+		AnnotationSet subclassTermsAS = Utils.getContainedAnnotations(termAS, containedSubclassPartAS);
+		Set<String> subclassStrings = new HashSet<String>();
+		Iterator<Annotation> iter = subclassTermsAS.iterator();
+		while (iter.hasNext()) {
+			subclassStrings.add(Utils.stringFor(inputAS.getDocument(), iter.next()));
+		}
+		return subclassStrings;
 	}
 	
 	private void doCValue() {
@@ -189,14 +262,15 @@ public class Project {
 	}
 
 	private void doJAPE() throws PersistenceException, ResourceInstantiationException, IOException, ExecutionException {
-		File[] gapps = new File[] {
-				new File(installDir + "/resources/gate/apps/linguistic-filter/linguistic-filter.gapp"),
-				new File(installDir + "/resources/gate/apps/subclass_relation_candidates/subclass_relation_candidates.gapp"),
+		String[] gapps = new String[] {
+			installDir + "/resources/gate/apps/token-string/token-string.gapp",
+			installDir + "/resources/gate/apps/linguistic-filter/linguistic-filter.gapp",
+			installDir + "/resources/gate/apps/subclass_relation_candidates/subclass_relation_candidates.gapp",
 		};
 		
-		for (File gapp : gapps) {
+		for (String gapp : gapps) {
 			CorpusController application = (CorpusController)
-					PersistenceManager.loadObjectFromFile(gapp);
+					PersistenceManager.loadObjectFromFile(new File(gapp));
 			application.setCorpus(persistCorp);
 			application.execute();
 		}
@@ -246,7 +320,6 @@ public class Project {
 		FeatureMap docFeatures;
 		Document doc;
 		
-		
 		for (Object docID : sds.getLrIds("gate.corpora.DocumentImpl")) {
 			// OPEN DOCUMENT
 			docFeatures = Factory.newFeatureMap();
@@ -289,16 +362,5 @@ public class Project {
 		public String toString() { return term + " " + confidence; }		
 		public String getTerm() { return term; }
 		public float getConfidence() { return confidence; }
-	}
-
-	public void exportTermsToCSV(File exportToFile) throws IOException {
-		BufferedWriter writer = new BufferedWriter(new FileWriter(exportToFile));
-		writer.write("Term,Confidence");
-		writer.newLine();
-		for (TermCandidate cand : termCandidates) {
-			writer.write(cand.getTerm().replaceAll(",", "") + "," + cand.getConfidence());
-			writer.newLine();
-		}
-		writer.close();
 	}
 }

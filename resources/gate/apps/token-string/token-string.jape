@@ -1,0 +1,12 @@
+Phase: TokenString
+Input: w
+Options: control = appelt	
+rule: TokenString
+({w}):token
+-->
+{
+  gate.AnnotationSet tokenAS = (gate.AnnotationSet)bindings.get("token"); 
+  gate.Annotation tokenAnn = (gate.Annotation)tokenAS.iterator().next(); 
+  gate.FeatureMap features = tokenAnn.getFeatures();
+  features.put("string", gate.Utils.stringFor(doc, tokenAnn));
+}
