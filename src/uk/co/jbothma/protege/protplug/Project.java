@@ -62,7 +62,9 @@ public class Project {
 			throws PersistenceException, UnsupportedOperationException, ResourceInstantiationException,
 			SecurityException {
 		this.projDir = projDir;
-		this.installDir = this.installedDir().getAbsolutePath();
+		this.installDir = "/home/jdb/thesis/workspace/ProtegePlugin";
+		// this way differs between running in EUnit and running inside protege inside eclipse
+		//this.installDir = this.installedDir().getAbsolutePath();
 		dsDir = "file://" + projDir.getAbsolutePath() + "/GATESerialDatastore";
 		projName = projDir.getName();
 		
@@ -92,27 +94,27 @@ public class Project {
 		doCValue();
 	}
 	
-	/**
-	 * http://www.onyxbits.de/content/wherami-locating-installation-directory-your-java-application
-	 */
-	public static File installedDir() {
-		URL url = Project.class.getProtectionDomain().getCodeSource()
-				.getLocation();
-		File file = null;
-		try {
-			file = new File(url.toURI());
-		} catch (URISyntaxException e) {
-			// Let's trust the JDK to get it rigth.
-		}
-
-		if (file.isDirectory()) {
-			// Application consists of loose class files
-			return file.getParentFile();
-		} else {
-			// Application is packaged in a JAR file
-			return file.getParentFile().getParentFile();
-		}
-	}
+//	/**
+//	 * http://www.onyxbits.de/content/wherami-locating-installation-directory-your-java-application
+//	 */
+//	public static File installedDir() {
+//		URL url = Project.class.getProtectionDomain().getCodeSource()
+//				.getLocation();
+//		File file = null;
+//		try {
+//			file = new File(url.toURI());
+//		} catch (URISyntaxException e) {
+//			// Let's trust the JDK to get it rigth.
+//		}
+//
+//		if (file.isDirectory()) {
+//			// Application consists of loose class files
+//			return file.getParentFile();
+//		} else {
+//			// Application is packaged in a JAR file
+//			return file.getParentFile().getParentFile();
+//		}
+//	}
 
 	public Collection<TermCandidate> getTermCandidates() {
 		return termCandidates;
