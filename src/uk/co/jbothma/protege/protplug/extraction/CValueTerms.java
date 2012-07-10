@@ -36,7 +36,7 @@ public class CValueTerms {
 			while (phrasIter.hasNext()) {
 				String phrase = "";
 				Annotation phrasAnnot = (Annotation) phrasIter.next();
-				Util.termAsLemmas(inputAS, phrasAnnot);
+				phrase = Util.termAsLemmas(inputAS, phrasAnnot);
 				cvals.observe(phrase.toLowerCase().trim());
 			}
 
