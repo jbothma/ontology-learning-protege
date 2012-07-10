@@ -1,4 +1,4 @@
-package uk.co.jbothma.protege.protplug;
+package uk.co.jbothma.protege.protplug.gui;
 
 import java.util.ArrayList;
 
@@ -6,14 +6,13 @@ import javax.swing.event.TableModelListener;
 
 import org.apache.commons.lang.NotImplementedException;
 
-import uk.co.jbothma.protege.protplug.Project.SubclassRelationCandidate;
-import uk.co.jbothma.protege.protplug.Project.TermCandidate;
+import uk.co.jbothma.protege.protplug.candidate.RelationCandidate;
 
-public class SubclassRelationCandidateTableModel implements javax.swing.table.TableModel {
-	private ArrayList<SubclassRelationCandidate> subclassCands;
+public class RelationCandidateTableModel implements javax.swing.table.TableModel {
+	private ArrayList<RelationCandidate> relationCands;
 
-	public SubclassRelationCandidateTableModel(ArrayList<SubclassRelationCandidate> subclassCands) {
-		this.subclassCands = subclassCands;
+	public RelationCandidateTableModel(ArrayList<RelationCandidate> relationCands) {
+		this.relationCands = relationCands;
 	}
 
 	@Override
@@ -27,13 +26,15 @@ public class SubclassRelationCandidateTableModel implements javax.swing.table.Ta
 			return String.class;
 		else if (col == 1)
 			return String.class;
+		else if (col == 2)
+			return String.class;
 		else
 			throw new IndexOutOfBoundsException();
 	}
 
 	@Override
 	public int getColumnCount() {
-		return 2;
+		return 3;
 	}
 
 	@Override
@@ -41,6 +42,8 @@ public class SubclassRelationCandidateTableModel implements javax.swing.table.Ta
 		if (col == 0)
 			return "Domain";
 		else if (col == 1)
+			return "Label";
+		else if (col == 2)
 			return "Range";
 		else
 			throw new IndexOutOfBoundsException();
@@ -48,15 +51,17 @@ public class SubclassRelationCandidateTableModel implements javax.swing.table.Ta
 
 	@Override
 	public int getRowCount() {
-		return subclassCands.size();
+		return relationCands.size();
 	}
 
 	@Override
 	public Object getValueAt(int rowIndex, int col) {
 		if (col == 0)
-			return subclassCands.get(rowIndex).getDomain();
+			return relationCands.get(rowIndex).getDomain();
 		else if (col == 1)
-			return subclassCands.get(rowIndex).getRange();
+			return relationCands.get(rowIndex).getLabel();
+		else if (col == 2)
+			return relationCands.get(rowIndex).getRange();
 		else
 			throw new IndexOutOfBoundsException();
 	}

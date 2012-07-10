@@ -21,6 +21,10 @@ import javax.swing.JTextPane;
 import javax.swing.SwingWorker;
 import javax.swing.filechooser.FileFilter;
 
+import uk.co.jbothma.protege.protplug.gui.RelationCandidateTableModel;
+import uk.co.jbothma.protege.protplug.gui.SubclassRelationCandidateTableModel;
+import uk.co.jbothma.protege.protplug.gui.TermCandidateTableModel;
+
 public class BobPanel extends JPanel {
 	private static final long serialVersionUID = -7832128279921728175L;
 	private Project project = null;

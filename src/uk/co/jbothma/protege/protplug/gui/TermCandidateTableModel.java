@@ -1,4 +1,4 @@
-package uk.co.jbothma.protege.protplug;
+package uk.co.jbothma.protege.protplug.gui;
 
 import java.util.ArrayList;
 
@@ -6,7 +6,7 @@ import javax.swing.event.TableModelListener;
 
 import org.apache.commons.lang.NotImplementedException;
 
-import uk.co.jbothma.protege.protplug.Project.TermCandidate;
+import uk.co.jbothma.protege.protplug.candidate.TermCandidate;
 
 public class TermCandidateTableModel implements javax.swing.table.TableModel {
 	private ArrayList<TermCandidate> termCands;
