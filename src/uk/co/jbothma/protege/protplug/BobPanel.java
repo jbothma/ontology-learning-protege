@@ -91,6 +91,7 @@ public class BobPanel extends JPanel {
 			public void actionPerformed(ActionEvent arg0) {
 				SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
 				    private JTable subclassCandTable;
+					private JTable relationCandTable;
 
 					@Override
 				    public Void doInBackground() {				    	
@@ -112,10 +113,14 @@ public class BobPanel extends JPanel {
 
 				        termCandTable = new JTable(new TermCandidateTableModel(project.getTermCandidates()));
 				        add(new JScrollPane(termCandTable));
-				        
+
 				        subclassCandTable = new JTable(
 				        		new SubclassRelationCandidateTableModel(project.getSubclassRelationCandidates()));
 				        add(new JScrollPane(subclassCandTable));
+				        
+				        relationCandTable = new JTable(
+				        		new RelationCandidateTableModel(project.getRelationCandidates()));
+				        add(new JScrollPane(relationCandTable));
 				    }
 				};
 				setButtonsEnabled(false);

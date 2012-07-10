@@ -41,6 +41,7 @@ import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 
+import uk.co.jbothma.protege.protplug.Project.RelationCandidate;
 import uk.co.jbothma.taxonomy.AggHierarchClust;
 import uk.co.jbothma.taxonomy.Cluster;
 import uk.co.jbothma.taxonomy.Term;
@@ -55,6 +56,7 @@ public class Project {
 	private SerialCorpusImpl persistCorp;
 	private ArrayList<TermCandidate> termCandidates;
 	private ArrayList<SubclassRelationCandidate> subclassRelCandidates;
+	private ArrayList<RelationCandidate> relationCandidates;
 	private String corpName;
 
 	public Project(File projDir)
@@ -90,6 +92,7 @@ public class Project {
 
 		termCandidates = new ArrayList<TermCandidate>();
 		subclassRelCandidates = new ArrayList<SubclassRelationCandidate>();
+		relationCandidates = new ArrayList<RelationCandidate>();
 	}
 
 	public void populateFromDir(String populateDir, String extensionFilter,	Boolean recurseDirectories)
@@ -108,8 +111,93 @@ public class Project {
 		doCValue();
 		doSubclassAnnCands();
 		doSubclassClustering();
+		doSubcategorisationFrames();
 	}
 	
+	private void doSubcategorisationFrames() {
+		Iterator<Document> docIter = persistCorp.iterator();
+		Document doc;
+		while (docIter.hasNext()) {
+			doc = docIter.next();
+			
+			String inputASName = "Original markups";
+			AnnotationSet inputAS = doc.getAnnotations(inputASName);
+
+			String sentASType = "sentence";
+			Iterator<Annotation> sentIter = inputAS.get(sentASType).iterator();
+			
+			AnnotationSet termAS = inputAS.get("TermCandidate");
+			
+			while (sentIter.hasNext()) {
+				Annotation sentAnnot = (Annotation) sentIter.next();
+				AnnotationSet wordAS = inputAS.get("w");
+				AnnotationSet containedWordsAS = Utils.getContainedAnnotations(wordAS, sentAnnot);
+				List<Annotation> wordAnnList = Utils.inDocumentOrder(containedWordsAS);
+				Annotation rootAnn = null;
+				for (Annotation ann : wordAnnList) {
+					FeatureMap features = ann.getFeatures();
+					if (features.get("deprel").equals("ROOT") && features.get("dephead").equals("")) {
+						rootAnn = ann;
+					}
+					if (!features.get("dephead").equals("")){
+						try {
+							int depHeadRef = Integer.parseInt((String)features.get("dephead"));
+							String depRel = (String)features.get("deprel");
+							Annotation depHead = wordAnnList.get(depHeadRef-1);
+							addBranch(depHead, ann);
+						} catch(NumberFormatException e) {}
+					}
+				}
+				if (rootAnn != null) {
+					if (rootAnn.getFeatures().get("pos").equals("VB")) {
+						Set<Annotation> branches = (Set<Annotation>)rootAnn.getFeatures().get("branches");
+						String subjStr = null;
+						String objStr = null;
+						String vgStr = Utils.stringFor(doc, rootAnn);
+						if (branches != null) {
+							for (Annotation branch : branches) {
+								String depRel = (String)branch.getFeatures().get("deprel");
+								if (depRel.equals("SS")) {
+									subjStr = getContainingTermString(doc, termAS, branch);
+								}
+								if (depRel.equals("OO")) {
+									objStr = getContainingTermString(doc, termAS, branch);
+								}
+								if (depRel.equals("VG")) {
+									vgStr += " " + Utils.stringFor(doc, branch);
+								}
+							}
+						}
+						if (subjStr != null || objStr != null) {
+							System.out.println("REL: ("+subjStr+")  " + vgStr + "  ("+objStr+")");
+							relationCandidates.add(new RelationCandidate(vgStr, subjStr, objStr));
+						}
+					}
+				}
+			}
+			
+			persistCorp.unloadDocument(doc, false);
+			Factory.deleteResource(doc);
+		}
+	}
+	
+	private static void addBranch(Annotation trunk, Annotation branch) {
+		Set<Annotation> branches = (Set<Annotation>) trunk.getFeatures().get("branches");
+		if (branches == null) {
+			branches = new HashSet<Annotation>();
+			trunk.getFeatures().put("branches", branches);
+		}
+		branches.add(branch);
+	}
+
+	public static String getContainingTermString(Document doc, AnnotationSet termAS, Annotation branch) {
+		AnnotationSet containingTermAS = Utils.getContainedAnnotations(termAS, branch);
+		if (containingTermAS.size() > 0) {
+			return Utils.stringFor(doc, containingTermAS);
+		}
+		return null;
+	}
+
 	private void doSubclassClustering() {
 		Set<String[]> terms = new HashSet<String[]>();
 		int startIdx = 0;
@@ -145,6 +233,10 @@ public class Project {
 	
 	public ArrayList<SubclassRelationCandidate> getSubclassRelationCandidates() {
 		return subclassRelCandidates;
+	}
+
+	public ArrayList<RelationCandidate> getRelationCandidates() {
+		return relationCandidates;
 	}
 	
 	public void close() throws PersistenceException {
@@ -408,5 +500,22 @@ public class Project {
 		public String toString() { return domain + " subclassOf " + range; }		
 		public String getDomain() { return domain; }		
 		public String getRange() { return range; }
+	}
+	
+	public class RelationCandidate {
+		private String domain;
+		private String range;
+		private String label;
+
+		public RelationCandidate(String label, String domain, String range) {
+			this.label = label;
+			this.domain = domain;
+			this.range = range;
+		}
+		
+		public String toString() { return domain + " (" + label + ") " + range; }		
+		public String getDomain() { return domain; }		
+		public String getRange() { return range; }		
+		public String getLabel() { return label; }
 	}
 }
