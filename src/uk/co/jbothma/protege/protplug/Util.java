@@ -1,11 +1,10 @@
 package uk.co.jbothma.protege.protplug;
 
-import java.util.List;
-
 import gate.Annotation;
 import gate.AnnotationSet;
-import gate.Document;
 import gate.Utils;
+
+import java.util.List;
 
 public class Util {
 	/**

@@ -22,6 +22,7 @@ import javax.swing.SwingWorker;
 import javax.swing.filechooser.FileFilter;
 
 import uk.co.jbothma.protege.protplug.Project;
+import uk.co.jbothma.protege.protplug.TermEventListener;
 import uk.co.jbothma.protege.protplug.gui.RelationCandidateTableModel;
 import uk.co.jbothma.protege.protplug.gui.SubclassRelationCandidateTableModel;
 import uk.co.jbothma.protege.protplug.gui.TermCandidateTableModel;
@@ -116,8 +117,7 @@ public class BobPanel extends JPanel {
 				        textPane.setText(textPane.getText()+"\nextraction finished.");
 				        textPane.setText(textPane.getText()+"\n"+project.getTermCandidates().size()+" terms");
 
-				        termCandTable = new JTable(new TermCandidateTableModel(project.getTermCandidates()));
-				        add(new JScrollPane(termCandTable));
+				        
 
 				        subclassCandTable = new JTable(
 				        		new SubclassRelationCandidateTableModel(project.getSubclassRelationCandidates()));
@@ -188,6 +188,9 @@ public class BobPanel extends JPanel {
 		textPane.setEditable(false);
 		add(textPane);
 		
+		termCandTable = new JTable(new TermCandidateTableModel());
+        add(new JScrollPane(termCandTable));
+		
 		setButtonsEnabled(false);
 	}
 	
@@ -232,6 +235,8 @@ public class BobPanel extends JPanel {
 			        catch (java.util.concurrent.ExecutionException e) {
 			        	e.printStackTrace();
 			        }
+			    	((TermCandidateTableModel) termCandTable.getModel()).setProject(project);
+			    	project.addTermListener((TermEventListener) termCandTable.getModel());
 			    	setButtonsEnabled(true);
 			    }
 			};

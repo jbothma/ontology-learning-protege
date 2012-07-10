@@ -21,7 +21,11 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.EventListener;
+import java.util.EventObject;
 import java.util.Iterator;
+
+import javax.swing.event.EventListenerList;
 
 import uk.co.jbothma.protege.protplug.candidate.RelationCandidate;
 import uk.co.jbothma.protege.protplug.candidate.SubclassRelationCandidate;
@@ -42,6 +46,7 @@ public class Project {
 	private ArrayList<SubclassRelationCandidate> subclassRelCandidates;
 	private ArrayList<RelationCandidate> relationCandidates;
 	private String corpName;
+	private EventListenerList termListenerList, relationListenerList, subclassListenerList;
 
 	public Project(File projDir)
 			throws PersistenceException, UnsupportedOperationException, ResourceInstantiationException,
@@ -77,6 +82,10 @@ public class Project {
 		termCandidates = new ArrayList<TermCandidate>();
 		subclassRelCandidates = new ArrayList<SubclassRelationCandidate>();
 		relationCandidates = new ArrayList<RelationCandidate>();
+		
+		termListenerList = new EventListenerList();
+		relationListenerList = new EventListenerList();
+		subclassListenerList = new EventListenerList();
 	}
 
 	public void populateFromDir(String populateDir, String extensionFilter,	Boolean recurseDirectories)
@@ -92,10 +101,12 @@ public class Project {
 	}
 	
 	public void extractElements() {
+		fireTermEvent();
 		CValueTerms.doCValue(persistCorp, termCandidates);
 		SyntacticPatternSubclasses.run(persistCorp, subclassRelCandidates);
 		HierarchAggClustSubclasses.run(termCandidates, subclassRelCandidates);
 		SubcategorisationFrames.run(persistCorp, relationCandidates);
+		fireTermEvent();
 	}
 
 	public ArrayList<TermCandidate> getTermCandidates() {
@@ -147,5 +158,22 @@ public class Project {
 			persistCorp.unloadDocument(doc, false);
 			Factory.deleteResource(doc);
 		}
+	}
+	
+	public void addTermListener(TermEventListener listener) {
+		termListenerList.add(TermEventListener.class, listener);
+	}
+	
+	public void removeTermListener(TermEventListener listener) {
+		termListenerList.remove(TermEventListener.class, listener);
+	}
+	
+	private void fireTermEvent() {
+		Object[] listeners = termListenerList.getListenerList();
+		for (int i = listeners.length-2; i>=0; i-=2) {
+	         if (listeners[i]==TermEventListener.class) {
+	             ((TermEventListener)listeners[i+1]).myEventOccurred(new TermEvent(this));
+	         }
+	     }
 	}
 }
