@@ -4,8 +4,8 @@
 <plugin>
    <extension id="TutViewComponent"
               point="org.protege.editor.core.application.ViewComponent">
-      <label value="Example View Component"/>
-      <class value="uk.co.jbothma.protege.protplug.TutView"/>
+      <label value="Ontology Learning"/>
+      <class value="uk.co.jbothma.protege.protplug.ui.TutView"/>
       <category value="@org.protege.ontologycategory"/>
    </extension>
 </plugin>

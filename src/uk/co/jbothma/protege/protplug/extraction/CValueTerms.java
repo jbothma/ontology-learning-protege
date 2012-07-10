@@ -12,6 +12,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
+import uk.co.jbothma.protege.protplug.Util;
 import uk.co.jbothma.protege.protplug.candidate.TermCandidate;
 import uk.co.jbothma.terms.CValueComparator;
 import uk.co.jbothma.terms.CValueSess;
@@ -35,18 +36,7 @@ public class CValueTerms {
 			while (phrasIter.hasNext()) {
 				String phrase = "";
 				Annotation phrasAnnot = (Annotation) phrasIter.next();
-				AnnotationSet tokAnnots = gate.Utils.getContainedAnnotations(
-						inputAS, phrasAnnot, "w");
-				List<Annotation> tokAnnotList = gate.Utils.inDocumentOrder(tokAnnots);
-				
-				for (Annotation tokAnnot : tokAnnotList) {
-					String lemma = tokenLemma(doc, tokAnnot);
-					// TODO: this is a corpus-specific hack and should be fixed in preprocessing or
-					// made customizable for the corpus. Also, it should rather be if the string matches ^|$
-					// so that strings that contain characters without whitespace are accepted.
-					if (!lemma.contains("|"))
-						phrase += lemma + " ";
-				}
+				Util.termAsLemmas(inputAS, phrasAnnot);
 				cvals.observe(phrase.toLowerCase().trim());
 			}
 
@@ -69,23 +59,5 @@ public class CValueTerms {
 			TermCandidate termCand = new TermCandidate(cand.getString(), conf);
 			termCandidates.add(termCand);
 		}
-	}
-	
-	private static String tokenLemma(gate.Document doc, Annotation tokAnnot) {
-		String lemma;
-		String[] lemmas;
-		String lemmaAnnotStr = (String)tokAnnot.getFeatures().get("lemma");
-		if (lemmaAnnotStr != null) {
-			lemmas = lemmaAnnotStr.split("\\|");
-			if (lemmas.length > 1) {
-				lemma = lemmas[1];
-				if (!lemma.equals("")) {
-					return lemma;
-				}
-			}
-		}
-		// fall back to raw string
-		lemma = Utils.stringFor(doc, tokAnnot).toLowerCase();
-		return lemma;
 	}
 }

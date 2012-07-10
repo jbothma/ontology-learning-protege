@@ -12,6 +12,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
+import uk.co.jbothma.protege.protplug.Util;
 import uk.co.jbothma.protege.protplug.candidate.SubclassRelationCandidate;
 
 public class SyntacticPatternSubclasses {
@@ -44,7 +45,7 @@ public class SyntacticPatternSubclasses {
 	private static String superclass(AnnotationSet inputAS, Annotation relation) {
 		AnnotationSet superclassAS = inputAS.get("Range");
 		AnnotationSet containedSuperclassAS = Utils.getContainedAnnotations(superclassAS, relation);
-		return Utils.stringFor(inputAS.getDocument(), containedSuperclassAS);
+		return Util.termAsLemmas(inputAS, containedSuperclassAS.iterator().next());
 	}
 
 	private static Set<String> subclasses(AnnotationSet inputAS, Annotation relation) {
@@ -55,7 +56,7 @@ public class SyntacticPatternSubclasses {
 		Set<String> subclassStrings = new HashSet<String>();
 		Iterator<Annotation> iter = subclassTermsAS.iterator();
 		while (iter.hasNext()) {
-			subclassStrings.add(Utils.stringFor(inputAS.getDocument(), iter.next()));
+			subclassStrings.add(Util.termAsLemmas(inputAS, iter.next()));
 		}
 		return subclassStrings;
 	}

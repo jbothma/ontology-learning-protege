@@ -1,4 +1,4 @@
-package uk.co.jbothma.protege.protplug;
+package uk.co.jbothma.protege.protplug.ui;
 
 import gate.creole.ExecutionException;
 import gate.creole.ResourceInstantiationException;
@@ -21,6 +21,7 @@ import javax.swing.JTextPane;
 import javax.swing.SwingWorker;
 import javax.swing.filechooser.FileFilter;
 
+import uk.co.jbothma.protege.protplug.Project;
 import uk.co.jbothma.protege.protplug.gui.RelationCandidateTableModel;
 import uk.co.jbothma.protege.protplug.gui.SubclassRelationCandidateTableModel;
 import uk.co.jbothma.protege.protplug.gui.TermCandidateTableModel;

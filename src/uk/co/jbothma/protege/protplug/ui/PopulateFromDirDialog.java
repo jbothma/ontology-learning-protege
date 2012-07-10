@@ -1,4 +1,4 @@
-package uk.co.jbothma.protege.protplug;
+package uk.co.jbothma.protege.protplug.ui;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;

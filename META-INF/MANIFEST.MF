@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Tutorial Plugin
-Bundle-SymbolicName: org.protege.editor.owl.examples.tab;singleton:=true
+Bundle-Name: Ontology Learning from Swedish Text
+Bundle-SymbolicName: uk.co.jbothma.protege.ontology-learning;singleton:=true
 Bundle-Version: 1.0.3
 Bundle-ClassPath: .,
  lib/ant-contrib.jar,
@@ -55,7 +55,7 @@ Bundle-ClassPath: .,
  lib/hierarchical-agglomerative-clusterer.jar,
  bin/
 Bundle-Activator: org.protege.editor.core.plugin.DefaultPluginActivator
-Bundle-Vendor: The Protege Development Team
+Bundle-Vendor: Jan Daniel Bothma
 Require-Bundle: org.eclipse.equinox.registry,
  org.eclipse.equinox.common,
  org.protege.editor.core.application,
@@ -90,8 +90,8 @@ Import-Package: javax.swing,
  org.xml.sax,
  org.xml.sax.ext,
  org.xml.sax.helpers
-Bundle-DocURL: www.perhaps.i.donthaveoneyet.com
-Bundle-Description: A simple plugin for a plugin development tutorial
+Bundle-DocURL: www.jbothma.co.uk
+Bundle-Description: A plugin which provides ontology learning tools
 Export-Package: com.jgoodies.forms.builder,
  com.jgoodies.forms.debug,
  com.jgoodies.forms.factories,
