@@ -52,6 +52,7 @@ Bundle-ClassPath: .,
  lib/xstream.jar,
  lib/forms-1.3.0.jar,
  lib/c-value_nc-value.jar,
+ lib/hierarchical-agglomerative-clusterer.jar,
  bin/
 Bundle-Activator: org.protege.editor.core.plugin.DefaultPluginActivator
 Bundle-Vendor: The Protege Development Team

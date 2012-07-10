@@ -12,14 +12,12 @@ import gate.Utils;
 import gate.corpora.SerialCorpusImpl;
 import gate.creole.ExecutionException;
 import gate.creole.ResourceInstantiationException;
-import gate.gui.ontology.SubClassAction;
 import gate.persist.PersistenceException;
 import gate.persist.SerialDataStore;
 import gate.security.SecurityException;
 import gate.util.ExtensionFileFilter;
 import gate.util.persistence.PersistenceManager;
 
-import java.awt.Component;
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -27,28 +25,25 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
 import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import javax.swing.JFileChooser;
-import javax.swing.JPanel;
+import org.apache.commons.lang.StringUtils;
 
+import uk.co.jbothma.taxonomy.AggHierarchClust;
+import uk.co.jbothma.taxonomy.Cluster;
+import uk.co.jbothma.taxonomy.Term;
 import uk.co.jbothma.terms.CValueComparator;
 import uk.co.jbothma.terms.CValueSess;
 import uk.co.jbothma.terms.Candidate;
@@ -112,8 +107,38 @@ public class Project {
 	public void extractElements() {
 		doCValue();
 		doSubclassAnnCands();
+		doSubclassClustering();
 	}
 	
+	private void doSubclassClustering() {
+		Set<String[]> terms = new HashSet<String[]>();
+		int startIdx = 0;
+		int endIdx = termCandidates.size()-1;
+		if (endIdx>500) {
+			startIdx = endIdx-500;
+		}
+		// select 500 terms with highest confidence
+		for (TermCandidate term : termCandidates.subList(startIdx, endIdx)) {
+			terms.add(term.getTerm().split(" "));
+		}
+		
+		AggHierarchClust clustering = new AggHierarchClust(terms.toArray(new String[][]{}));
+		clustering.cluster();
+		Set<Cluster> clusters = clustering.getClusters();
+		Set<Term> clusterTerms;
+		SubclassRelationCandidate cand;
+		for (Cluster cluster : clusters) {
+			if (cluster.getTerms().size() > 1) {
+				clusterTerms = cluster.getTerms();
+				for (Term term : clusterTerms) {
+					String domain = StringUtils.join(term.getParts(), " ");
+					cand = new SubclassRelationCandidate(domain, term.getHead());
+					subclassRelCandidates.add(cand);
+				}
+			}
+		}
+	}
+
 	public ArrayList<TermCandidate> getTermCandidates() {
 		return termCandidates;
 	}

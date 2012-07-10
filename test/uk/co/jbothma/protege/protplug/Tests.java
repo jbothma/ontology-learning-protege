@@ -49,7 +49,7 @@ public class Tests {
 	@Test
 	public void testTypicalFlow() throws PersistenceException, ResourceInstantiationException, SecurityException, IOException, ExecutionException {
 		project = new Project(projDir);
-		project.populateFromDir("/home/jdb/protplug/1", "pdf", false);
+		project.populateFromDir("/home/jdb/protplug/500", "pdf", false);
 		project.preprocess();
 		project.extractElements();
 		assertTrue(project.getTermCandidates().size()>0);
