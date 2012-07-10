@@ -13,6 +13,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import uk.co.jbothma.protege.protplug.Util;
 import uk.co.jbothma.protege.protplug.candidate.RelationCandidate;
 
 public class SubcategorisationFrames {
@@ -60,10 +61,10 @@ public class SubcategorisationFrames {
 							for (Annotation branch : branches) {
 								String depRel = (String)branch.getFeatures().get("deprel");
 								if (depRel.equals("SS")) {
-									subjStr = getContainingTermString(doc, termAS, branch);
+									subjStr = getContainingTermString(inputAS, termAS, branch);
 								}
 								if (depRel.equals("OO")) {
-									objStr = getContainingTermString(doc, termAS, branch);
+									objStr = getContainingTermString(inputAS, termAS, branch);
 								}
 								if (depRel.equals("VG")) {
 									vgStr += " " + Utils.stringFor(doc, branch);
@@ -91,10 +92,10 @@ public class SubcategorisationFrames {
 		branches.add(branch);
 	}
 
-	private static String getContainingTermString(Document doc, AnnotationSet termAS, Annotation branch) {
+	private static String getContainingTermString(AnnotationSet inputAS, AnnotationSet termAS, Annotation branch) {
 		AnnotationSet containingTermAS = Utils.getContainedAnnotations(termAS, branch);
 		if (containingTermAS.size() > 0) {
-			return Utils.stringFor(doc, containingTermAS);
+			return Util.termAsLemmas(inputAS, containingTermAS.iterator().next());
 		}
 		return null;
 	}
