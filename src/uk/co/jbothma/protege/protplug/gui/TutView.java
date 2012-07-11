@@ -26,10 +26,11 @@ public class TutView extends AbstractOWLViewComponent {
 	@Override
 	protected void initialiseOWLView() throws Exception {
 		this.setLayout(new BorderLayout());
-		bobPanel = new BobPanel();
+		bobPanel = new BobPanel(this.getOWLModelManager());
         add(bobPanel);
         bobPanel.setMaximumSize(this.getSize());
 		
+        // initialise GATE in the background while drawing the GUI
 		SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
 		    @Override
 		    public Void doInBackground() {				    	

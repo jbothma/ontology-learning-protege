@@ -21,6 +21,7 @@ import javax.swing.JTextPane;
 import javax.swing.SwingWorker;
 import javax.swing.filechooser.FileFilter;
 
+import uk.co.jbothma.protege.protplug.OntoBuilder;
 import uk.co.jbothma.protege.protplug.Project;
 import uk.co.jbothma.protege.protplug.RelationEventListener;
 import uk.co.jbothma.protege.protplug.SubclassEventListener;
@@ -30,6 +31,8 @@ import uk.co.jbothma.protege.protplug.gui.SubclassRelationCandidateTableModel;
 import uk.co.jbothma.protege.protplug.gui.TermCandidateTableModel;
 import javax.swing.JTabbedPane;
 
+import org.protege.editor.owl.model.OWLModelManager;
+
 public class BobPanel extends JPanel {
 	private static final long serialVersionUID = -7832128279921728175L;
 	private Project project = null;
@@ -38,11 +41,13 @@ public class BobPanel extends JPanel {
 	private JTable termCandTable, subclassCandTable, relationCandTable;
 	private JButton btnExportTerms;
 	private JTabbedPane candidateTabbedPane;
+	private JButton btnExportEverythingTo;
 
 	/**
 	 * Create the panel.
 	 */
-	public BobPanel() {
+	public BobPanel(final OWLModelManager owlModelManager) {
+		
 		btnNewOntologyLearning = new JButton("New ontology learning project");
 		btnNewOntologyLearning.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
@@ -175,6 +180,15 @@ public class BobPanel extends JPanel {
 			}
 		});
 		add(btnExportTerms);
+		
+		btnExportEverythingTo = new JButton("Export everything to ontology");
+		btnExportEverythingTo.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				OntoBuilder builder = new OntoBuilder(owlModelManager);
+				builder.addSubclassRelations(project.getSubclassRelationCandidates());
+			}
+		});
+		add(btnExportEverythingTo);
 		
 		textPane = new JTextPane();
 		textPane.setEditable(false);
