@@ -1,4 +1,4 @@
-package uk.co.jbothma.protege.protplug.ui;
+package uk.co.jbothma.protege.protplug.gui;
 
 import gate.Gate;
 import gate.util.GateException;

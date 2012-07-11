@@ -101,30 +101,30 @@ public class Project {
 	}
 	
 	public void extractElements() {
-		fireTermEvent();
 		CValueTerms.doCValue(persistCorp, termCandidates);
+		fireTermEvent();
+		
 		SyntacticPatternSubclasses.run(persistCorp, subclassRelCandidates);
 		HierarchAggClustSubclasses.run(termCandidates, subclassRelCandidates);
+		fireSubclassEvent();
+		
 		SubcategorisationFrames.run(persistCorp, relationCandidates);
-		fireTermEvent();
+		fireRelationEvent();
 	}
 
 	public ArrayList<TermCandidate> getTermCandidates() {
 		return termCandidates;
 	}
-	
 	public ArrayList<SubclassRelationCandidate> getSubclassRelationCandidates() {
 		return subclassRelCandidates;
 	}
-
 	public ArrayList<RelationCandidate> getRelationCandidates() {
 		return relationCandidates;
 	}
-	
 	public void close() throws PersistenceException {
 		sds.close();
 	}
-
+	
 	public void exportTermsToCSV(File exportToFile) throws IOException {
 		BufferedWriter writer = new BufferedWriter(new FileWriter(exportToFile));
 		writer.write("Term,Confidence");
@@ -163,11 +163,38 @@ public class Project {
 	public void addTermListener(TermEventListener listener) {
 		termListenerList.add(TermEventListener.class, listener);
 	}
-	
 	public void removeTermListener(TermEventListener listener) {
 		termListenerList.remove(TermEventListener.class, listener);
+	}	
+	public void addRelationListener(RelationEventListener listener) {
+		relationListenerList.add(RelationEventListener.class, listener);
+	}
+	public void removeTermListener(RelationEventListener listener) {
+		relationListenerList.remove(RelationEventListener.class, listener);
+	}
+	public void addSubclassListener(SubclassEventListener listener) {
+		subclassListenerList.add(SubclassEventListener.class, listener);
+	}
+	public void removeSubclassListener(SubclassEventListener listener) {
+		subclassListenerList.remove(SubclassEventListener.class, listener);
 	}
 	
+	private void fireRelationEvent() {
+		Object[] listeners = relationListenerList.getListenerList();
+		for (int i = listeners.length-2; i>=0; i-=2) {
+	         if (listeners[i]==RelationEventListener.class) {
+	             ((RelationEventListener)listeners[i+1]).myEventOccurred(new RelationEvent(this));
+	         }
+	     }
+	}
+	private void fireSubclassEvent() {
+		Object[] listeners = subclassListenerList.getListenerList();
+		for (int i = listeners.length-2; i>=0; i-=2) {
+	         if (listeners[i]==SubclassEventListener.class) {
+	             ((SubclassEventListener)listeners[i+1]).myEventOccurred(new SubclassEvent(this));
+	         }
+	     }
+	}	
 	private void fireTermEvent() {
 		Object[] listeners = termListenerList.getListenerList();
 		for (int i = listeners.length-2; i>=0; i-=2) {

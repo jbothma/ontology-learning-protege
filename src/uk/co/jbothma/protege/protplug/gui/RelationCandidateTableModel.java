@@ -1,23 +1,36 @@
 package uk.co.jbothma.protege.protplug.gui;
 
-import java.util.ArrayList;
-
+import javax.swing.event.EventListenerList;
+import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
+import javax.swing.table.TableModel;
 
 import org.apache.commons.lang.NotImplementedException;
 
-import uk.co.jbothma.protege.protplug.candidate.RelationCandidate;
+import uk.co.jbothma.protege.protplug.Project;
+import uk.co.jbothma.protege.protplug.RelationEvent;
+import uk.co.jbothma.protege.protplug.RelationEventListener;
 
-public class RelationCandidateTableModel implements javax.swing.table.TableModel {
-	private ArrayList<RelationCandidate> relationCands;
+public class RelationCandidateTableModel implements TableModel, RelationEventListener {
+	private EventListenerList tableModelListenerList;
+	private Project project = null;
 
-	public RelationCandidateTableModel(ArrayList<RelationCandidate> relationCands) {
-		this.relationCands = relationCands;
+	public RelationCandidateTableModel() {
+		tableModelListenerList = new EventListenerList();
+	}
+	
+	public void setProject(Project project) {
+		this.project = project;
 	}
 
 	@Override
-	public void addTableModelListener(TableModelListener arg0) {
-		// throw new NotImplementedException();
+	public void addTableModelListener(TableModelListener listener) {
+		tableModelListenerList.add(TableModelListener.class, listener);
+	}
+
+	@Override
+	public void removeTableModelListener(TableModelListener listener) {
+		tableModelListenerList.remove(TableModelListener.class, listener);
 	}
 
 	@Override
@@ -51,17 +64,20 @@ public class RelationCandidateTableModel implements javax.swing.table.TableModel
 
 	@Override
 	public int getRowCount() {
-		return relationCands.size();
+		if (project == null)
+			return 0;
+		else
+			return project.getRelationCandidates().size();
 	}
 
 	@Override
 	public Object getValueAt(int rowIndex, int col) {
 		if (col == 0)
-			return relationCands.get(rowIndex).getDomain();
+			return project.getRelationCandidates().get(rowIndex).getDomain();
 		else if (col == 1)
-			return relationCands.get(rowIndex).getLabel();
+			return project.getRelationCandidates().get(rowIndex).getLabel();
 		else if (col == 2)
-			return relationCands.get(rowIndex).getRange();
+			return project.getRelationCandidates().get(rowIndex).getRange();
 		else
 			throw new IndexOutOfBoundsException();
 	}
@@ -72,12 +88,17 @@ public class RelationCandidateTableModel implements javax.swing.table.TableModel
 	}
 
 	@Override
-	public void removeTableModelListener(TableModelListener arg0) {
-		// throw new NotImplementedException();
+	public void setValueAt(Object arg0, int arg1, int arg2) {
+		throw new NotImplementedException();
 	}
 
 	@Override
-	public void setValueAt(Object arg0, int arg1, int arg2) {
-		throw new NotImplementedException();
+	public void myEventOccurred(RelationEvent evt) {
+		Object[] listeners = tableModelListenerList.getListenerList();
+		for (int i = listeners.length-2; i>=0; i-=2) {
+	         if (listeners[i]==TableModelListener.class) {
+	        	 ((TableModelListener)listeners[i+1]).tableChanged(new TableModelEvent(this));
+	         }
+	     }
 	}
 }

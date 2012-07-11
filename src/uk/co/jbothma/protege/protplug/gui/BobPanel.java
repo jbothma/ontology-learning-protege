@@ -1,4 +1,4 @@
-package uk.co.jbothma.protege.protplug.ui;
+package uk.co.jbothma.protege.protplug.gui;
 
 import gate.creole.ExecutionException;
 import gate.creole.ResourceInstantiationException;
@@ -22,18 +22,22 @@ import javax.swing.SwingWorker;
 import javax.swing.filechooser.FileFilter;
 
 import uk.co.jbothma.protege.protplug.Project;
+import uk.co.jbothma.protege.protplug.RelationEventListener;
+import uk.co.jbothma.protege.protplug.SubclassEventListener;
 import uk.co.jbothma.protege.protplug.TermEventListener;
 import uk.co.jbothma.protege.protplug.gui.RelationCandidateTableModel;
 import uk.co.jbothma.protege.protplug.gui.SubclassRelationCandidateTableModel;
 import uk.co.jbothma.protege.protplug.gui.TermCandidateTableModel;
+import javax.swing.JTabbedPane;
 
 public class BobPanel extends JPanel {
 	private static final long serialVersionUID = -7832128279921728175L;
 	private Project project = null;
 	private JButton btnPreprocess, btnNewOntologyLearning, btnPopulateFromDirectory, btnExtractCandidates;
 	private JTextPane textPane;
-	private JTable termCandTable;
+	private JTable termCandTable, subclassCandTable, relationCandTable;
 	private JButton btnExportTerms;
+	private JTabbedPane candidateTabbedPane;
 
 	/**
 	 * Create the panel.
@@ -96,8 +100,6 @@ public class BobPanel extends JPanel {
 		btnExtractCandidates.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
-				    private JTable subclassCandTable;
-					private JTable relationCandTable;
 
 					@Override
 				    public Void doInBackground() {				    	
@@ -116,16 +118,6 @@ public class BobPanel extends JPanel {
 				    	setButtonsEnabled(true);
 				        textPane.setText(textPane.getText()+"\nextraction finished.");
 				        textPane.setText(textPane.getText()+"\n"+project.getTermCandidates().size()+" terms");
-
-				        
-
-				        subclassCandTable = new JTable(
-				        		new SubclassRelationCandidateTableModel(project.getSubclassRelationCandidates()));
-				        add(new JScrollPane(subclassCandTable));
-				        
-				        relationCandTable = new JTable(
-				        		new RelationCandidateTableModel(project.getRelationCandidates()));
-				        add(new JScrollPane(relationCandTable));
 				    }
 				};
 				setButtonsEnabled(false);
@@ -187,10 +179,17 @@ public class BobPanel extends JPanel {
 		textPane = new JTextPane();
 		textPane.setEditable(false);
 		add(textPane);
-		
+
 		termCandTable = new JTable(new TermCandidateTableModel());
-        add(new JScrollPane(termCandTable));
+        subclassCandTable = new JTable(new SubclassRelationCandidateTableModel());        
+        relationCandTable = new JTable(new RelationCandidateTableModel());
 		
+		candidateTabbedPane = new JTabbedPane(JTabbedPane.TOP);
+		candidateTabbedPane.addTab("Term", new JScrollPane(termCandTable));
+		candidateTabbedPane.addTab("Subclass", new JScrollPane(subclassCandTable));
+		candidateTabbedPane.addTab("Relation", new JScrollPane(relationCandTable));
+		add(candidateTabbedPane);
+				
 		setButtonsEnabled(false);
 	}
 	
@@ -235,7 +234,11 @@ public class BobPanel extends JPanel {
 			        catch (java.util.concurrent.ExecutionException e) {
 			        	e.printStackTrace();
 			        }
+			    	((SubclassRelationCandidateTableModel) subclassCandTable.getModel()).setProject(project);
+			    	((RelationCandidateTableModel) relationCandTable.getModel()).setProject(project);
 			    	((TermCandidateTableModel) termCandTable.getModel()).setProject(project);
+			    	project.addSubclassListener((SubclassEventListener) subclassCandTable.getModel());
+			    	project.addRelationListener((RelationEventListener) relationCandTable.getModel());
 			    	project.addTermListener((TermEventListener) termCandTable.getModel());
 			    	setButtonsEnabled(true);
 			    }
