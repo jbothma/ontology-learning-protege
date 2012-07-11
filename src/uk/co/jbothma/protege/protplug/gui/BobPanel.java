@@ -191,10 +191,12 @@ public class BobPanel extends JPanel {
 		add(candidateTabbedPane);
 				
 		setButtonsEnabled(false);
+		btnNewOntologyLearning.setEnabled(false);
 	}
 	
 	public void initialized() {
 		setButtonsEnabled(true);
+		btnNewOntologyLearning.setEnabled(true);
 	}
 	
 	private void newProject() {
@@ -244,6 +246,7 @@ public class BobPanel extends JPanel {
 			    }
 			};
 			setButtonsEnabled(false);
+			btnNewOntologyLearning.setEnabled(false);
 			worker.execute();
 		} else {
 			
@@ -289,8 +292,7 @@ public class BobPanel extends JPanel {
 	
 	private void setButtonsEnabled(Boolean value) {
 		JButton[] buttons = new JButton[] {
-			btnPreprocess, 
-			btnNewOntologyLearning, 
+			btnPreprocess,
 			btnPopulateFromDirectory,
 			btnExtractCandidates,
 			btnExportTerms,
