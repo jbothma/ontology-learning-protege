@@ -135,7 +135,8 @@ public class OntoBuilder {
 	}
 	
 	private static String spaceLowerToMixed(String s) {
-		return spaceLowerToCamel(s).substring(0, 1).toUpperCase() + s.substring(1);
+		String camelcase = spaceLowerToCamel(s); 
+		return camelcase.substring(0, 1).toLowerCase() + camelcase.substring(1);
 	}
 	
 	private static String spaceLowerToCamel(String s) {

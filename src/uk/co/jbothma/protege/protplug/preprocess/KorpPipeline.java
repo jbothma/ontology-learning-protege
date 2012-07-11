@@ -15,6 +15,8 @@ import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileFilter;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -28,6 +30,7 @@ import uk.co.jbothma.protege.protplug.Project;
 
 public class KorpPipeline {
 	private File korpWorkingDir;
+	private File korpOriginalsDir;
 	private SerialDataStore sds;
 	private SerialCorpusImpl corp;
 	private String installDir;
@@ -48,15 +51,32 @@ public class KorpPipeline {
 		
 		korpWorkingDir = new File(projDir.getAbsolutePath() + "/preprocess/korp/");
 		korpWorkingDir.mkdirs();
-		Files.createDirectory(Paths.get(korpWorkingDir.getAbsolutePath()+"/original"));
+		korpOriginalsDir = new File(korpWorkingDir.getAbsolutePath() + "/original");
+		korpOriginalsDir.mkdirs();
+		
 		installKorpMakefile();
 	}
 
 	public void run() throws PersistenceException, ResourceInstantiationException, IOException, SecurityException {
 		dumpXML();
+		fixHyphenNewlines();
 		runKorp();
 		project.emptyCorpus();
 		importKorpOutput();
+	}
+
+	private void fixHyphenNewlines() throws IOException {
+		for (File child : korpOriginalsDir.listFiles()) {
+			if (child.getName().endsWith(".xml")) {
+				fixFileHyphenNewlines(child);
+			}
+		}
+	}
+
+	private void fixFileHyphenNewlines(File child) throws IOException {
+		String file = new String(Files.readAllBytes(Paths.get(child.toURI())));
+		file = file.replaceAll("\\-\n", "");
+		Files.write(Paths.get(child.toURI()), file.getBytes());
 	}
 
 	private void importKorpOutput() throws ResourceInstantiationException, MalformedURLException, PersistenceException, IOException {
@@ -102,7 +122,7 @@ public class KorpPipeline {
 			doc = (gate.Document)
 					Factory.createResource("gate.corpora.DocumentImpl", docFeatures);
 			
-			FileWriter fstream = new FileWriter(korpWorkingDir.getAbsolutePath() + "/original/" + doc.getName() + ".xml");
+			FileWriter fstream = new FileWriter(korpOriginalsDir.getAbsolutePath() + "/" + doc.getName() + ".xml");
 			BufferedWriter out = new BufferedWriter(fstream);
 			out.write(doc.toXml(null, true));
 			out.close();
