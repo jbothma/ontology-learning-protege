@@ -8,6 +8,12 @@ import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLDataFactory;
+import org.semanticweb.owlapi.model.OWLDeclarationAxiom;
+import org.semanticweb.owlapi.model.OWLObjectProperty;
+import org.semanticweb.owlapi.model.OWLObjectPropertyAssertionAxiom;
+import org.semanticweb.owlapi.model.OWLObjectPropertyDomainAxiom;
+import org.semanticweb.owlapi.model.OWLObjectPropertyRangeAxiom;
+import org.semanticweb.owlapi.model.OWLObjectUnionOf;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 
@@ -55,6 +61,20 @@ public class OntoBuilder {
 		ontologyIRI = ontology.getOntologyID().getOntologyIRI();
 	}
 	
+	public void addTerms(Collection<TermCandidate> terms) {
+		OWLClass termClass;
+		for (TermCandidate term : terms) {
+			termClass = factory.getOWLClass(
+					IRI.create(ontologyIRI + "#" + makeClass(term.getTerm())));
+			
+			OWLDeclarationAxiom declarationAxiom = factory.getOWLDeclarationAxiom(termClass);
+
+			AddAxiom addAxiom = new AddAxiom(ontology, declarationAxiom);
+			
+			ontologyManager.applyChange(addAxiom);
+		}
+	}
+	
 	public void addSubclassRelations(Collection<SubclassRelationCandidate> relations) {
 		OWLClass domain, range;
 		for (SubclassRelationCandidate relation : relations) {
@@ -70,10 +90,48 @@ public class OntoBuilder {
 			ontologyManager.applyChange(addAxiom);
 		}
 	}
+
+	public void addRelations(Collection<RelationCandidate> relations) {
+		OWLClass domain, range;
+		OWLObjectProperty property;
+		OWLObjectPropertyDomainAxiom domainAxiom;
+		OWLObjectPropertyRangeAxiom rangeAxiom;
+		OWLObjectUnionOf domainUnionClass, rangeUnionClass;
+		
+		for (RelationCandidate relation : relations) {
+
+			property = factory.getOWLObjectProperty(IRI.create(ontologyIRI + "#" + makeProperty(relation.getLabel())));
+			
+			if (relation.getDomain() != null) {
+				domain = factory.getOWLClass(
+						IRI.create(ontologyIRI + "#" + makeClass(relation.getDomain())));
+				domainUnionClass = factory.getOWLObjectUnionOf(domain);
+				domainAxiom = factory.getOWLObjectPropertyDomainAxiom(property, domainUnionClass);
+				ontologyManager.applyChange(new AddAxiom(ontology, domainAxiom));
+			}
+			
+			if (relation.getRange() != null) {
+				range = factory.getOWLClass(
+						IRI.create(ontologyIRI + "#" + makeClass(relation.getRange())));
+				rangeUnionClass = factory.getOWLObjectUnionOf(range);
+				rangeAxiom = factory.getOWLObjectPropertyRangeAxiom(property, rangeUnionClass);
+				ontologyManager.applyChange(new AddAxiom(ontology, rangeAxiom));
+			}
+		}
+	}
 	
 	private String makeClass(String term) {
+		return spaceLowerToCamel(filterChars(term));
+	}
+	
+	private String makeProperty(String label) {
+		return spaceLowerToMixed(filterChars(label));
+	}
+	
+	private String filterChars(String s) {
+		// space, hyphen, letters and numbers in unicode blocks "Basic Latin" and "Latin-1 Supplement"
 		String regex = "[^\\- 0-9\\x30-\\x39\\x41-\\x5A\\x61-\\x7A\\xC0-\\xD6\\xD8-\\xF6\\xF8-\\xFF]";
-		return spaceLowerToCamel(term.replaceAll(regex, "_"));
+		return s.replaceAll(regex, "_");
 	}
 	
 	private static String spaceLowerToMixed(String s) {

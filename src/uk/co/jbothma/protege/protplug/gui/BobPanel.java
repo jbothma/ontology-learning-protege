@@ -185,7 +185,9 @@ public class BobPanel extends JPanel {
 		btnExportEverythingTo.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				OntoBuilder builder = new OntoBuilder(owlModelManager);
+				builder.addTerms(project.getTermCandidates());
 				builder.addSubclassRelations(project.getSubclassRelationCandidates());
+				builder.addRelations(project.getRelationCandidates());
 			}
 		});
 		add(btnExportEverythingTo);
