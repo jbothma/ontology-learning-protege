@@ -7,7 +7,7 @@ vrt_columns     = word pos msd lemma    ref dephead     deprel
 vrt_structs     = -    -   -   -        -   -           -      sentence:n paragraph:n sentence:id
 
 xml_elements    = body p
-xml_annotations = text paragraph
+xml_annotations = body paragraph
 xml_skip =
 
 include $(KORP_INSTALL)/corpora/Makefile.common
@@ -19,7 +19,7 @@ sentence_chunk = paragraph
 sentence_segmenter = punkt_sentence
 sentence_model = $(punkt_model)
 
-paragraph_chunk = text
+paragraph_chunk = body
 paragraph_segmenter = blanklines
 
 ################################################################################

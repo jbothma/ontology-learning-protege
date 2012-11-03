@@ -11,6 +11,7 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.util.ArrayList;
 
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
@@ -26,6 +27,7 @@ import uk.co.jbothma.protege.protplug.Project;
 import uk.co.jbothma.protege.protplug.RelationEventListener;
 import uk.co.jbothma.protege.protplug.SubclassEventListener;
 import uk.co.jbothma.protege.protplug.TermEventListener;
+import uk.co.jbothma.protege.protplug.candidate.TermCandidate;
 import uk.co.jbothma.protege.protplug.gui.RelationCandidateTableModel;
 import uk.co.jbothma.protege.protplug.gui.SubclassRelationCandidateTableModel;
 import uk.co.jbothma.protege.protplug.gui.TermCandidateTableModel;
@@ -42,12 +44,12 @@ public class BobPanel extends JPanel {
 	private JButton btnExportTerms;
 	private JTabbedPane candidateTabbedPane;
 	private JButton btnExportEverythingTo;
+	private JButton btnExportTop;
 
 	/**
 	 * Create the panel.
 	 */
 	public BobPanel(final OWLModelManager owlModelManager) {
-		
 		btnNewOntologyLearning = new JButton("New ontology learning project");
 		btnNewOntologyLearning.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
@@ -132,11 +134,10 @@ public class BobPanel extends JPanel {
 		});
 		add(btnExtractCandidates);
 		
-		btnExportTerms = new JButton("Export terms");
+		btnExportTerms = new JButton("Export terms to CSV");
 		btnExportTerms.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				JFileChooser chooser = new JFileChooser();
-				chooser.setCurrentDirectory(new java.io.File("."));
+				JFileChooser chooser = new JFileChooser(System.getProperty("user.home"));
 				chooser.setDialogTitle("Export terms to file");
 				FileFilter filter = new FileFilter() {
 				    public boolean accept(File file) {
@@ -192,6 +193,23 @@ public class BobPanel extends JPanel {
 		});
 		add(btnExportEverythingTo);
 		
+		btnExportTop = new JButton("Export top 500 terms and all relations");
+		btnExportTop.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				OntoBuilder builder = new OntoBuilder(owlModelManager);
+				ArrayList<TermCandidate> terms = project.getTermCandidates();
+				int startIdx = 0;
+				int endIdx = terms.size()-1;
+				if (endIdx>500) {
+					startIdx = endIdx-500;
+				}
+				builder.addTerms(terms.subList(startIdx, endIdx));
+				builder.addSubclassRelations(project.getSubclassRelationCandidates());
+				builder.addRelations(project.getRelationCandidates());
+			}
+		});
+		add(btnExportTop);
+		
 		textPane = new JTextPane();
 		textPane.setEditable(false);
 		add(textPane);
@@ -221,7 +239,7 @@ public class BobPanel extends JPanel {
 		JFileChooser chooser;
 		String choosertitle = "Choose an empty directory for this project.";
 		
-		chooser = new JFileChooser();
+		chooser = new JFileChooser(System.getProperty("user.home"));
 		chooser.setCurrentDirectory(new java.io.File("."));
 		chooser.setDialogTitle(choosertitle);
 		chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);

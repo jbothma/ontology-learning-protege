@@ -29,7 +29,7 @@
         This may be the only setting that the developer needs to
         change.
      -->
-	<property name="plugin" value="org.protege.editor.owl.examples.tab" />
+	<property name="plugin" value="uk.co.jbothma.protege.ontology-learning" />
 
 
 	<!-- 

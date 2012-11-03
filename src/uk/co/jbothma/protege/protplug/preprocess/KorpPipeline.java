@@ -16,10 +16,12 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileFilter;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -96,11 +98,15 @@ public class KorpPipeline {
         BufferedReader reader = new BufferedReader(tempReader);
 		String line;
 		while ((line = reader.readLine()) != null){
-			if (line.contains("Exported"))
+			//if (line.contains("Exported"))
 				System.out.println("korp: " + line);
 		}
 
 		reader.close();
+		
+		if (korpProcess.exitValue() != 0) {
+			System.err.println("korpProcess.exitValue() = " + korpProcess.exitValue());
+		}
 		korpProcess.destroy();
 	}
 
@@ -121,9 +127,11 @@ public class KorpPipeline {
 			docFeatures.put(DataStore.DATASTORE_FEATURE_NAME, sds);
 			doc = (gate.Document)
 					Factory.createResource("gate.corpora.DocumentImpl", docFeatures);
+			String path = korpOriginalsDir.getAbsolutePath() + "/" + doc.getName() + ".xml";
 			
-			FileWriter fstream = new FileWriter(korpOriginalsDir.getAbsolutePath() + "/" + doc.getName() + ".xml");
-			BufferedWriter out = new BufferedWriter(fstream);
+			OutputStreamWriter oswriter = new OutputStreamWriter(new FileOutputStream(path), "UTF-8");
+			BufferedWriter out = new BufferedWriter(oswriter);
+			
 			out.write(doc.toXml(null, true));
 			out.close();
 			

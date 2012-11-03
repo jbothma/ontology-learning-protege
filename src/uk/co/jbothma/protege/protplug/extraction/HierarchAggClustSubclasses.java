@@ -17,8 +17,8 @@ public class HierarchAggClustSubclasses {
 		Set<String[]> terms = new HashSet<String[]>();
 		int startIdx = 0;
 		int endIdx = termCandidates.size()-1;
-		if (endIdx>500) {
-			startIdx = endIdx-500;
+		if (endIdx>1000) {
+			startIdx = endIdx-1000;
 		}
 		// select 500 terms with highest confidence
 		for (TermCandidate term : termCandidates.subList(startIdx, endIdx)) {
