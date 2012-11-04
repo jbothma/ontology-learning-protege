@@ -9,18 +9,23 @@ import gate.util.persistence.PersistenceManager;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
+
+import org.osgi.framework.FrameworkUtil;
+
+import uk.co.jbothma.protege.protplug.gui.BobPanel;
 
 public class JAPEPreprocessing {
 	public static void doJAPE(Corpus corp, String installDir) throws PersistenceException, ResourceInstantiationException, IOException, ExecutionException {
-		String[] gapps = new String[] {
-			installDir + "/resources/gate/apps/token-string/token-string.gapp",
-			installDir + "/resources/gate/apps/linguistic-filter/linguistic-filter.gapp",
-			installDir + "/resources/gate/apps/subclass_relation_candidates/subclass_relation_candidates.gapp",
+		URL[] gapps = new URL[] {
+			FrameworkUtil.getBundle(BobPanel.class).getResource("/resources/gate/apps/token-string/token-string.gapp"),
+			FrameworkUtil.getBundle(BobPanel.class).getResource("/resources/gate/apps/linguistic-filter/linguistic-filter.gapp"),
+			FrameworkUtil.getBundle(BobPanel.class).getResource("/resources/gate/apps/subclass_relation_candidates/subclass_relation_candidates.gapp"),
 		};
 		
-		for (String gapp : gapps) {
+		for (URL gapp : gapps) {
 			CorpusController application = (CorpusController)
-					PersistenceManager.loadObjectFromFile(new File(gapp));
+					PersistenceManager.loadObjectFromUrl(gapp);
 			application.setCorpus(corp);
 			application.execute();
 		}
