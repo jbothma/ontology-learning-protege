@@ -36,17 +36,20 @@ public class TutView extends AbstractOWLViewComponent {
 		    public Void doInBackground() {				    	
 		    	System.setProperty(
 						"gate.home",
-						"/home/jdb/thesis/sw_originals/gate-7.0-build4195-ALL/gate-7.0-build4195-ALL/");
+						"/Users/jdb/thesis/sw_originals/gate-7.0-build4195-ALL/gate-7.0-build4195-ALL/");
 				System.setProperty(
 						"gate.plugins.home",
-						"/home/jdb/thesis/sw_originals/gate-7.0-build4195-ALL/gate-7.0-build4195-ALL/plugins");
-				Gate.setSiteConfigFile(new File("/home/jdb/thesis/sw_originals/gate-7.0-build4195-ALL/gate-7.0-build4195-ALL/gate.xml"));
+						"/Users/jdb/thesis/sw_originals/gate-7.0-build4195-ALL/gate-7.0-build4195-ALL/plugins");
+				Gate.setSiteConfigFile(new File("/Users/jdb/thesis/sw_originals/gate-7.0-build4195-ALL/gate-7.0-build4195-ALL/gate.xml"));
 				try {
 					if (!Gate.isInitialised())
 						Gate.init();
 					Gate.getCreoleRegister().registerDirectories(
-							new File("/home/jdb/bin/gate-7.0-build4195-ALL/plugins/ANNIE").toURI().toURL());
-				} catch (GateException | MalformedURLException e) {
+							new File("/Users/jdb/thesis/sw_originals/gate-7.0-build4195-ALL/gate-7.0-build4195-ALL/plugins/ANNIE").toURI().toURL());
+				} catch (GateException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (MalformedURLException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}

@@ -24,10 +24,12 @@ public class JAPEPreprocessing {
 		};
 		
 		for (URL gapp : gapps) {
+			System.out.println("Loading GATE application " + gapp);
 			CorpusController application = (CorpusController)
 					PersistenceManager.loadObjectFromUrl(gapp);
 			application.setCorpus(corp);
 			application.execute();
+			application.cleanup();
 		}
 	}
 }

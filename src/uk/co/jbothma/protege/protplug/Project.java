@@ -21,8 +21,6 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.EventListener;
-import java.util.EventObject;
 import java.util.Iterator;
 
 import javax.swing.event.EventListenerList;
@@ -52,8 +50,8 @@ public class Project {
 			throws PersistenceException, UnsupportedOperationException, ResourceInstantiationException,
 			SecurityException, MalformedURLException 
 	{
-		this.installDir = "/home/jdb/thesis/workspace/ProtegePlugin";
-	
+		
+		this.installDir = "/Users/jdb/thesis/protege-4.1-svn/protege4.1/ProtegePlugin";
 		if (!projDir.exists()) {
 			projDir.mkdirs();
 		}
@@ -95,9 +93,10 @@ public class Project {
 		sds.sync(persistCorp);
 	}
 	
-	public void preprocess() throws PersistenceException, ResourceInstantiationException, IOException, SecurityException, ExecutionException {
+	public void preprocess() throws PersistenceException, ResourceInstantiationException, IOException, SecurityException, ExecutionException, InterruptedException {
 		new KorpPipeline(projDir, this, sds, installDir, persistCorp).run();
 		JAPEPreprocessing.doJAPE(persistCorp, installDir);
+		
 	}
 	
 	public void extractElements() {

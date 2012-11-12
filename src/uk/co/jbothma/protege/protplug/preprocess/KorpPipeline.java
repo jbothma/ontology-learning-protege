@@ -1,6 +1,5 @@
 package uk.co.jbothma.protege.protplug.preprocess;
 
-import gate.Corpus;
 import gate.DataStore;
 import gate.Document;
 import gate.Factory;
@@ -15,18 +14,15 @@ import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileFilter;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.MalformedURLException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
+import java.nio.MappedByteBuffer;
+import java.nio.channels.FileChannel;
+import java.nio.charset.Charset;
 
 import uk.co.jbothma.protege.protplug.Project;
 
@@ -59,7 +55,7 @@ public class KorpPipeline {
 		installKorpMakefile();
 	}
 
-	public void run() throws PersistenceException, ResourceInstantiationException, IOException, SecurityException {
+	public void run() throws PersistenceException, ResourceInstantiationException, IOException, SecurityException, InterruptedException {
 		dumpXML();
 		fixHyphenNewlines();
 		runKorp();
@@ -76,9 +72,17 @@ public class KorpPipeline {
 	}
 
 	private void fixFileHyphenNewlines(File child) throws IOException {
-		String file = new String(Files.readAllBytes(Paths.get(child.toURI())));
+		FileInputStream instream = new FileInputStream(child);
+		FileChannel fc = instream.getChannel();
+		MappedByteBuffer bb = fc.map(FileChannel.MapMode.READ_ONLY, 0, fc.size());
+		String file = Charset.forName("UTF-8").decode(bb).toString();
+		fc.close();
+		
 		file = file.replaceAll("\\-\n", "");
-		Files.write(Paths.get(child.toURI()), file.getBytes());
+		OutputStreamWriter oswriter = new OutputStreamWriter(new FileOutputStream(child), "UTF-8");
+		BufferedWriter out = new BufferedWriter(oswriter);
+		out.write(file);
+		out.close();
 	}
 
 	private void importKorpOutput() throws ResourceInstantiationException, MalformedURLException, PersistenceException, IOException {
@@ -87,7 +91,7 @@ public class KorpPipeline {
 		sds.sync(corp);
 	}
 
-	private void runKorp() throws IOException {
+	private void runKorp() throws IOException, InterruptedException {
 		ProcessBuilder pb = new ProcessBuilder("make", "TEXT", "export");
 		pb.directory(korpWorkingDir);
 		pb.redirectErrorStream(true); // redirect errorStream to inputStream
@@ -103,7 +107,7 @@ public class KorpPipeline {
 		}
 
 		reader.close();
-		
+		korpProcess.waitFor();
 		if (korpProcess.exitValue() != 0) {
 			System.err.println("korpProcess.exitValue() = " + korpProcess.exitValue());
 		}
@@ -111,9 +115,11 @@ public class KorpPipeline {
 	}
 
 	private void installKorpMakefile() throws IOException {
-		Path source = Paths.get(installDir + "/resources/korp/Makefile");
-		Path target = Paths.get(korpWorkingDir.getAbsolutePath() + "/Makefile");
-		Files.copy(source, target, StandardCopyOption.REPLACE_EXISTING);
+		FileChannel source = new FileInputStream(installDir + "/resources/korp/Makefile").getChannel();
+		FileChannel destination = new FileOutputStream(korpWorkingDir.getAbsolutePath() + "/Makefile").getChannel();
+		destination.transferFrom(source, 0, source.size());
+		source.close();
+		destination.close();
 	}
 	
 	private void dumpXML() throws PersistenceException, ResourceInstantiationException, IOException {

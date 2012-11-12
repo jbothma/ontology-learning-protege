@@ -47,7 +47,7 @@ public class Tests {
 	}
 	
 	@Test
-	public void testTypicalFlow() throws PersistenceException, ResourceInstantiationException, SecurityException, IOException, ExecutionException {
+	public void testTypicalFlow() throws PersistenceException, ResourceInstantiationException, SecurityException, IOException, ExecutionException, InterruptedException {
 		project = new Project(projDir);
 		project.populateFromDir("/home/jdb/protplug/1", "pdf", false);
 		project.preprocess();

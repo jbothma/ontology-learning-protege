@@ -180,6 +180,9 @@
 		<copy todir="${classes}/lib">
 			<fileset dir="${lib}" excludes="junit*.jar" />
 		</copy>
+		<copy todir="${classes}/resources">
+			<fileset dir="resources" />
+		</copy>
 		<copy todir="${classes}">
 			<fileset dir="." includes="*.xml">
 				<exclude name="build.xml" />
@@ -188,7 +191,7 @@
 	</target>
 
 	<target name="compile" depends="buildlibs, checkProtegeLibsAndReport">
-		<javac srcdir="${src}" destdir="${classes}" debug="on" includeAntRuntime="false">
+		<javac srcdir="${src}" destdir="${classes}" debug="on" includeAntRuntime="false" target="1.6">
 			<classpath refid="project.classpath" />
 		</javac>
 	</target>

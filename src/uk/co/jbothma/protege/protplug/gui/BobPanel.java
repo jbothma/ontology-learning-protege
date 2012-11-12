@@ -17,10 +17,13 @@ import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.JTextPane;
 import javax.swing.SwingWorker;
 import javax.swing.filechooser.FileFilter;
+
+import org.protege.editor.owl.model.OWLModelManager;
 
 import uk.co.jbothma.protege.protplug.OntoBuilder;
 import uk.co.jbothma.protege.protplug.Project;
@@ -28,12 +31,6 @@ import uk.co.jbothma.protege.protplug.RelationEventListener;
 import uk.co.jbothma.protege.protplug.SubclassEventListener;
 import uk.co.jbothma.protege.protplug.TermEventListener;
 import uk.co.jbothma.protege.protplug.candidate.TermCandidate;
-import uk.co.jbothma.protege.protplug.gui.RelationCandidateTableModel;
-import uk.co.jbothma.protege.protplug.gui.SubclassRelationCandidateTableModel;
-import uk.co.jbothma.protege.protplug.gui.TermCandidateTableModel;
-import javax.swing.JTabbedPane;
-
-import org.protege.editor.owl.model.OWLModelManager;
 
 public class BobPanel extends JPanel {
 	private static final long serialVersionUID = -7832128279921728175L;
@@ -75,8 +72,22 @@ public class BobPanel extends JPanel {
 				    public Void doInBackground() {
 				    	try {
 							project.preprocess();
-						} catch (PersistenceException | ResourceInstantiationException
-								| IOException | SecurityException | ExecutionException e) {
+						} catch (PersistenceException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						} catch (ResourceInstantiationException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						} catch (SecurityException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						} catch (ExecutionException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						} catch (IOException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						} catch (InterruptedException e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
@@ -254,8 +265,19 @@ public class BobPanel extends JPanel {
 					try {
 						project = new Project(projDir);
 				        textPane.setText(textPane.getText()+"Created project in " + projDir);
-					} catch (PersistenceException | UnsupportedOperationException
-							| ResourceInstantiationException | SecurityException | MalformedURLException e) {
+					} catch (PersistenceException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (UnsupportedOperationException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (ResourceInstantiationException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (SecurityException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (MalformedURLException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
@@ -300,7 +322,16 @@ public class BobPanel extends JPanel {
 			    public Void doInBackground() {
 			    	try {
 						project.populateFromDir(directory, extension, recurse);
-					} catch (ResourceInstantiationException | PersistenceException | IOException e) {
+					} catch (ResourceInstantiationException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (MalformedURLException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (PersistenceException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (IOException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
