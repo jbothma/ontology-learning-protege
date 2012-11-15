@@ -16,7 +16,9 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.MalformedURLException;
@@ -31,20 +33,17 @@ public class KorpPipeline {
 	private File korpOriginalsDir;
 	private SerialDataStore sds;
 	private SerialCorpusImpl corp;
-	private String installDir;
 	private File projDir;
 	private Project project;
 
 	public KorpPipeline(
 			File projDir, 
 			Project project, 
-			SerialDataStore sds, 
-			String installDir, 
+			SerialDataStore sds,
 			SerialCorpusImpl corp) throws IOException {
 		this.projDir = projDir;
 		this.project = project;
 		this.sds = sds;
-		this.installDir = installDir;
 		this.corp = corp;
 		
 		korpWorkingDir = new File(projDir.getAbsolutePath() + "/preprocess/korp/");
@@ -77,6 +76,7 @@ public class KorpPipeline {
 		MappedByteBuffer bb = fc.map(FileChannel.MapMode.READ_ONLY, 0, fc.size());
 		String file = Charset.forName("UTF-8").decode(bb).toString();
 		fc.close();
+		instream.close();
 		
 		file = file.replaceAll("\\-\n", "");
 		OutputStreamWriter oswriter = new OutputStreamWriter(new FileOutputStream(child), "UTF-8");
@@ -115,11 +115,12 @@ public class KorpPipeline {
 	}
 
 	private void installKorpMakefile() throws IOException {
-		FileChannel source = new FileInputStream(installDir + "/resources/korp/Makefile").getChannel();
-		FileChannel destination = new FileOutputStream(korpWorkingDir.getAbsolutePath() + "/Makefile").getChannel();
-		destination.transferFrom(source, 0, source.size());
-		source.close();
-		destination.close();
+		InputStream instream = getClass().getResourceAsStream("/resources/korp/Makefile");
+		java.util.Scanner s = new java.util.Scanner(instream).useDelimiter("\\A");
+	    String makefile = s.hasNext() ? s.next() : "";
+	    BufferedWriter out = new BufferedWriter(new FileWriter(korpWorkingDir.getAbsolutePath() + "/Makefile"));
+	    out.write(makefile);
+	    out.close();
 	}
 	
 	private void dumpXML() throws PersistenceException, ResourceInstantiationException, IOException {

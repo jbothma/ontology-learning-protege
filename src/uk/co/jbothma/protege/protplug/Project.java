@@ -37,7 +37,7 @@ import uk.co.jbothma.protege.protplug.preprocess.KorpPipeline;
 
 public class Project {
 	private File projDir, dsDir;
-	private String projName, installDir;
+	private String projName;
 	private SerialDataStore sds;
 	private SerialCorpusImpl persistCorp;
 	private ArrayList<TermCandidate> termCandidates;
@@ -51,7 +51,6 @@ public class Project {
 			SecurityException, MalformedURLException 
 	{
 		
-		this.installDir = "/Users/jdb/thesis/protege-4.1-svn/protege4.1/ProtegePlugin";
 		if (!projDir.exists()) {
 			projDir.mkdirs();
 		}
@@ -94,8 +93,8 @@ public class Project {
 	}
 	
 	public void preprocess() throws PersistenceException, ResourceInstantiationException, IOException, SecurityException, ExecutionException, InterruptedException {
-		new KorpPipeline(projDir, this, sds, installDir, persistCorp).run();
-		JAPEPreprocessing.doJAPE(persistCorp, installDir);
+		new KorpPipeline(projDir, this, sds, persistCorp).run();
+		JAPEPreprocessing.doJAPE(persistCorp);
 		
 	}
 	
