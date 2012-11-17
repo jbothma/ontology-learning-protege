@@ -1,6 +1,7 @@
 package uk.co.jbothma.protege.protplug.gui;
 
 import gate.Gate;
+import gate.creole.ANNIEConstants;
 import gate.util.GateException;
 
 import java.awt.BorderLayout;
@@ -33,19 +34,14 @@ public class TutView extends AbstractOWLViewComponent {
         // initialise GATE in the background while drawing the GUI
 		SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
 		    @Override
-		    public Void doInBackground() {				    	
-		    	System.setProperty(
-						"gate.home",
-						"/Users/jdb/thesis/sw_originals/gate-7.0-build4195-ALL/gate-7.0-build4195-ALL/");
-				System.setProperty(
-						"gate.plugins.home",
-						"/Users/jdb/thesis/sw_originals/gate-7.0-build4195-ALL/gate-7.0-build4195-ALL/plugins");
-				Gate.setSiteConfigFile(new File("/Users/jdb/thesis/sw_originals/gate-7.0-build4195-ALL/gate-7.0-build4195-ALL/gate.xml"));
-				try {
+		    public Void doInBackground() {
+		    	String gateHome = System.getenv("GATE_HOME");
+		    	System.setProperty("gate.home", gateHome);
+		    	try {
 					if (!Gate.isInitialised())
 						Gate.init();
-					Gate.getCreoleRegister().registerDirectories(
-							new File("/Users/jdb/thesis/sw_originals/gate-7.0-build4195-ALL/gate-7.0-build4195-ALL/plugins/ANNIE").toURI().toURL());
+					Gate.getCreoleRegister().registerDirectories(new File( 
+							Gate.getPluginsHome(), ANNIEConstants.PLUGIN_DIR).toURI().toURL());
 				} catch (GateException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
