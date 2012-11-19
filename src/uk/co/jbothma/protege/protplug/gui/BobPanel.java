@@ -23,6 +23,7 @@ import javax.swing.JTextPane;
 import javax.swing.SwingWorker;
 import javax.swing.filechooser.FileFilter;
 
+import org.protege.editor.core.ProtegeApplication;
 import org.protege.editor.owl.model.OWLModelManager;
 
 import uk.co.jbothma.protege.protplug.OntoBuilder;
@@ -69,28 +70,8 @@ public class BobPanel extends JPanel {
 			public void actionPerformed(ActionEvent arg0) {
 				SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
 				    @Override
-				    public Void doInBackground() {
-				    	try {
-							project.preprocess();
-						} catch (PersistenceException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						} catch (ResourceInstantiationException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						} catch (SecurityException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						} catch (ExecutionException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						} catch (IOException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						} catch (InterruptedException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
+				    public Void doInBackground() throws PersistenceException, ResourceInstantiationException, SecurityException, ExecutionException, IOException, InterruptedException {
+						project.preprocess();
 						return null;
 				    }
 
@@ -98,9 +79,11 @@ public class BobPanel extends JPanel {
 				    public void done() {
 				    	try {
 				            get();
-				        } catch (InterruptedException ignore) {}
+				        } catch (InterruptedException e) {
+				        	ProtegeApplication.getErrorLog().logError(e);
+				        }
 				        catch (java.util.concurrent.ExecutionException e) {
-				        	e.printStackTrace();
+				        	ProtegeApplication.getErrorLog().logError(e);
 				        }
 				    	setButtonsEnabled(true);
 				        textPane.setText(textPane.getText()+"\npreprocessing finished.");
@@ -131,7 +114,7 @@ public class BobPanel extends JPanel {
 				            get();
 				        } catch (InterruptedException ignore) {}
 				        catch (java.util.concurrent.ExecutionException e) {
-				        	e.printStackTrace();
+				        	ProtegeApplication.getErrorLog().logError(e);
 				        }
 				    	setButtonsEnabled(true);
 				        textPane.setText(textPane.getText()+"\nextraction finished.");
@@ -165,13 +148,8 @@ public class BobPanel extends JPanel {
 					final File exportToFile = chooser.getSelectedFile();
 					SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
 					    @Override
-					    public Void doInBackground() {
-							try {
-								project.exportTermsToCSV(exportToFile);
-							} catch (IOException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}
+					    public Void doInBackground() throws IOException {
+							project.exportTermsToCSV(exportToFile);
 							return null;
 					    }
 
@@ -179,9 +157,11 @@ public class BobPanel extends JPanel {
 					    public void done() {
 					    	try {
 					            get();
-					        } catch (InterruptedException ignore) {}
+					        } catch (InterruptedException e) {
+					        	ProtegeApplication.getErrorLog().logError(e);
+					        }
 					        catch (java.util.concurrent.ExecutionException e) {
-					        	e.printStackTrace();
+					        	ProtegeApplication.getErrorLog().logError(e);
 					        }
 					    	setButtonsEnabled(true);
 					    }
@@ -261,26 +241,9 @@ public class BobPanel extends JPanel {
 
 			SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
 			    @Override
-			    public Void doInBackground() {
-					try {
-						project = new Project(projDir);
-				        textPane.setText(textPane.getText()+"Created project in " + projDir);
-					} catch (PersistenceException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					} catch (UnsupportedOperationException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					} catch (ResourceInstantiationException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					} catch (SecurityException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					} catch (MalformedURLException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
+			    public Void doInBackground() throws PersistenceException, UnsupportedOperationException, ResourceInstantiationException, SecurityException, MalformedURLException {
+					project = new Project(projDir);
+			        textPane.setText(textPane.getText()+"Created project in " + projDir);
 					return null;
 			    }
 
@@ -288,9 +251,11 @@ public class BobPanel extends JPanel {
 			    public void done() {
 			    	try {
 			            get();
-			        } catch (InterruptedException ignore) {}
+			        } catch (InterruptedException e) {
+			        	ProtegeApplication.getErrorLog().logError(e);
+			        }
 			        catch (java.util.concurrent.ExecutionException e) {
-			        	e.printStackTrace();
+			        	ProtegeApplication.getErrorLog().logError(e);
 			        }
 			    	((SubclassRelationCandidateTableModel) subclassCandTable.getModel()).setProject(project);
 			    	((RelationCandidateTableModel) relationCandTable.getModel()).setProject(project);
@@ -319,22 +284,8 @@ public class BobPanel extends JPanel {
 			
 			SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
 			    @Override
-			    public Void doInBackground() {
-			    	try {
-						project.populateFromDir(directory, extension, recurse);
-					} catch (ResourceInstantiationException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					} catch (MalformedURLException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					} catch (PersistenceException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
+			    public Void doInBackground() throws ResourceInstantiationException, MalformedURLException, PersistenceException, IOException {
+					project.populateFromDir(directory, extension, recurse);
 					return null;
 			    }
 
@@ -342,9 +293,11 @@ public class BobPanel extends JPanel {
 			    public void done() {
 			    	try {
 			            get();
-			        } catch (InterruptedException ignore) {}
+			        } catch (InterruptedException e) {
+			        	ProtegeApplication.getErrorLog().logError(e);
+			        }
 			        catch (java.util.concurrent.ExecutionException e) {
-			        	e.printStackTrace();
+			        	ProtegeApplication.getErrorLog().logError(e);
 			        }
 			    	setButtonsEnabled(true);
 			        textPane.setText(textPane.getText()+"\n"+"populated from "+directory);
@@ -367,13 +320,8 @@ public class BobPanel extends JPanel {
 		}
 	}
 
-	public void cleanup() {
-		try {
-			if (project != null)
-				project.close();
-		} catch (PersistenceException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+	public void cleanup() throws PersistenceException {
+		if (project != null)
+			project.close();
 	}
 }
