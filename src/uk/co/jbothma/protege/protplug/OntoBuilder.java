@@ -10,7 +10,6 @@ import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLDeclarationAxiom;
 import org.semanticweb.owlapi.model.OWLObjectProperty;
-import org.semanticweb.owlapi.model.OWLObjectPropertyAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLObjectPropertyDomainAxiom;
 import org.semanticweb.owlapi.model.OWLObjectPropertyRangeAxiom;
 import org.semanticweb.owlapi.model.OWLObjectUnionOf;
@@ -48,10 +47,6 @@ public class OntoBuilder {
 		AddAxiom addAxiom = new AddAxiom(ontology, axiom);
 		
 		ontologyManager.applyChange(addAxiom);
-		
-		for (OWLClass cls : ontology.getClassesInSignature()) {
-			System.out.println("Referenced class: " + cls);
-		}
 	}
 	
 	public OntoBuilder(OWLModelManager owlModelManager) {

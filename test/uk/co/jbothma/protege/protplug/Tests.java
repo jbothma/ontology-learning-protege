@@ -62,10 +62,4 @@ public class Tests {
 		project.extractElements();
 		assertTrue(project.getTermCandidates().size()>0);
 	}
-	
-	@Test
-	public void printASNames() throws PersistenceException, UnsupportedOperationException, ResourceInstantiationException, SecurityException, MalformedURLException {
-		project = new Project(new File("/home/jdb/protplug/1project"));
-		project.printAnnotationSetsNames();
-	}
 }

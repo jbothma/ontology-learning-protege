@@ -2,7 +2,6 @@ package uk.co.jbothma.protege.protplug;
 
 import gate.Corpus;
 import gate.DataStore;
-import gate.Document;
 import gate.Factory;
 import gate.FeatureMap;
 import gate.corpora.SerialCorpusImpl;
@@ -21,7 +20,6 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Iterator;
 
 import javax.swing.event.EventListenerList;
 
@@ -141,23 +139,7 @@ public class Project {
 		}
 		sds.sync(persistCorp);
 	}
-	
-	public void printAnnotationSetsNames() {
-		Iterator<Document> docIter = persistCorp.iterator();
-		Document doc;
-		while (docIter.hasNext()) {
-			doc = docIter.next();
-			
-			System.out.println(doc.getName());
-			for (String annotationSetName : doc.getAnnotationSetNames()) {
-				System.out.println(doc.getAnnotations(annotationSetName).getAllTypes());
-			}
-			
-			persistCorp.unloadDocument(doc, false);
-			Factory.deleteResource(doc);
-		}
-	}
-	
+		
 	public void addTermListener(TermEventListener listener) {
 		termListenerList.add(TermEventListener.class, listener);
 	}

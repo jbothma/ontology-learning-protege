@@ -25,6 +25,9 @@ import java.net.MalformedURLException;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 
 import uk.co.jbothma.protege.protplug.Project;
 
@@ -33,15 +36,16 @@ public class KorpPipeline {
 	private File korpOriginalsDir;
 	private SerialDataStore sds;
 	private SerialCorpusImpl corp;
-	private File projDir;
 	private Project project;
+	private Logger logger;
 
 	public KorpPipeline(
 			File projDir, 
 			Project project, 
 			SerialDataStore sds,
 			SerialCorpusImpl corp) throws IOException {
-		this.projDir = projDir;
+
+		logger = Logger.getLogger(KorpPipeline.class.getCanonicalName());
 		this.project = project;
 		this.sds = sds;
 		this.corp = corp;
@@ -103,13 +107,13 @@ public class KorpPipeline {
 		String line;
 		while ((line = reader.readLine()) != null){
 			//if (line.contains("Exported"))
-				System.out.println("korp: " + line);
+				logger.log(Level.INFO, "korp: " + line);
 		}
 
 		reader.close();
 		korpProcess.waitFor();
 		if (korpProcess.exitValue() != 0) {
-			System.err.println("korpProcess.exitValue() = " + korpProcess.exitValue());
+			logger.log(Level.SEVERE, "korpProcess.exitValue() = " + korpProcess.exitValue());
 		}
 		korpProcess.destroy();
 	}
