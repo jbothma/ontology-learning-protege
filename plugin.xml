@@ -2,10 +2,20 @@
 <?eclipse version="3.0"?>
 
 <plugin>
+
+    <extension point="org.protege.editor.core.application.WorkspaceTab" id="OLSTTab">
+        <label value="Ontology Learning"/>
+        <class value="org.protege.editor.owl.ui.OWLWorkspaceViewsTab"/>
+        <editorKitId value="OWLEditorKit"/>
+        <index value="JJJ"/>
+      <defaultViewConfigFileName value="viewconfig-OLSTTab.xml"/>
+    </extension>
+    
    <extension id="TutViewComponent"
               point="org.protege.editor.core.application.ViewComponent">
       <label value="Ontology Learning"/>
       <class value="uk.co.jbothma.protege.protplug.gui.TutView"/>
       <category value="@org.protege.ontologycategory"/>
    </extension>
+   
 </plugin>
