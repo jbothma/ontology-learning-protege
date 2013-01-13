@@ -11,10 +11,10 @@
       <defaultViewConfigFileName value="viewconfig-OLSTTab.xml"/>
     </extension>
     
-   <extension id="TutViewComponent"
+   <extension id="OntLearnViewComponent"
               point="org.protege.editor.core.application.ViewComponent">
       <label value="Ontology Learning"/>
-      <class value="uk.co.jbothma.protege.protplug.gui.TutView"/>
+      <class value="uk.co.jbothma.protege.protplug.gui.OntLearnView"/>
       <category value="@org.protege.ontologycategory"/>
    </extension>
    

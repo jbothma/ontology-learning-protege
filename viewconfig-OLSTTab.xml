@@ -3,7 +3,7 @@
     <VSNode splits="1.0">
         <CNode>
             <Component label="Ontology Learning">
-                <Property id="pluginId" value="uk.co.jbothma.protege.ontology-learning.TutViewComponent"/>
+                <Property id="pluginId" value="uk.co.jbothma.protege.ontology-learning.OntLearnComponent"/>
             </Component>
         </CNode>
     </VSNode>

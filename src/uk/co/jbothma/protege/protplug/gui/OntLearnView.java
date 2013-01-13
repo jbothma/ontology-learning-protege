@@ -15,8 +15,8 @@ import javax.swing.SwingWorker;
 import org.protege.editor.core.ProtegeApplication;
 import org.protege.editor.owl.ui.view.AbstractOWLViewComponent;
 
-public class TutView extends AbstractOWLViewComponent {
-	public TutView() {
+public class OntLearnView extends AbstractOWLViewComponent {
+	public OntLearnView() {
 	}
 	BobPanel bobPanel;
 	
