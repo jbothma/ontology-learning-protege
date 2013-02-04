@@ -1,3 +1,6 @@
+/**
+ * This class represents an ontology learning project.
+ */
 package uk.co.jbothma.protege.protplug;
 
 import gate.Corpus;

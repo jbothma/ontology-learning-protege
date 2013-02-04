@@ -14,7 +14,6 @@ import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -22,12 +21,9 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.MalformedURLException;
-import java.nio.MappedByteBuffer;
-import java.nio.channels.FileChannel;
-import java.nio.charset.Charset;
 
-import org.apache.log4j.Logger;
 import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 
 import uk.co.jbothma.protege.protplug.Project;
 
@@ -60,34 +56,10 @@ public class KorpPipeline {
 
 	public void run() throws PersistenceException, ResourceInstantiationException, IOException, SecurityException, InterruptedException {
 		dumpXML();
-		fixHyphenNewlines();
 		runKorp();
 		project.emptyCorpus();
 		importKorpOutput();
-	}
-
-	private void fixHyphenNewlines() throws IOException {
-		for (File child : korpOriginalsDir.listFiles()) {
-			if (child.getName().endsWith(".xml")) {
-				fixFileHyphenNewlines(child);
-			}
-		}
-	}
-
-	private void fixFileHyphenNewlines(File child) throws IOException {
-		FileInputStream instream = new FileInputStream(child);
-		FileChannel fc = instream.getChannel();
-		MappedByteBuffer bb = fc.map(FileChannel.MapMode.READ_ONLY, 0, fc.size());
-		String file = Charset.forName("UTF-8").decode(bb).toString();
-		fc.close();
-		instream.close();
-		
-		file = file.replaceAll("\\-\n", "");
-		OutputStreamWriter oswriter = new OutputStreamWriter(new FileOutputStream(child), "UTF-8");
-		BufferedWriter out = new BufferedWriter(oswriter);
-		out.write(file);
-		out.close();
-	}
+	}	
 
 	private void importKorpOutput() throws ResourceInstantiationException, MalformedURLException, PersistenceException, IOException {
 		String populateDir = korpWorkingDir.getAbsolutePath() + "/export";
