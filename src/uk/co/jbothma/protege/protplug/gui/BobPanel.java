@@ -208,6 +208,10 @@ public class BobPanel extends JPanel {
 		termCandTable = new JTable(new TermCandidateTableModel());
         subclassCandTable = new JTable(new SubclassRelationCandidateTableModel());        
         relationCandTable = new JTable(new RelationCandidateTableModel());
+        
+        termCandTable.setAutoCreateRowSorter(true);
+        subclassCandTable.setAutoCreateRowSorter(true);
+        relationCandTable.setAutoCreateRowSorter(true);
 		
 		candidateTabbedPane = new JTabbedPane(JTabbedPane.TOP);
 		candidateTabbedPane.addTab("Term", new JScrollPane(termCandTable));

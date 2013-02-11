@@ -3,11 +3,9 @@ package uk.co.jbothma.protege.protplug.gui;
 import gate.Gate;
 import gate.creole.ANNIEConstants;
 import gate.persist.PersistenceException;
-import gate.util.GateException;
 
 import java.awt.BorderLayout;
 import java.io.File;
-import java.net.MalformedURLException;
 import java.util.concurrent.ExecutionException;
 
 import javax.swing.SwingWorker;
