@@ -81,8 +81,7 @@ public class PopulateFromDirDialog extends JDialog {
 					JFileChooser chooser;
 					String choosertitle = "Select a directory from which to import documents";
 					
-					chooser = new JFileChooser();
-					chooser.setCurrentDirectory(new java.io.File("."));
+					chooser = new JFileChooser(System.getProperty("user.home"));
 					chooser.setDialogTitle(choosertitle);
 					chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 					// disable the "All files" option.

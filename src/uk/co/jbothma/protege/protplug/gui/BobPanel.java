@@ -235,7 +235,6 @@ public class BobPanel extends JPanel {
 		String choosertitle = "Choose an empty directory for this project.";
 		
 		chooser = new JFileChooser(System.getProperty("user.home"));
-		chooser.setCurrentDirectory(new java.io.File("."));
 		chooser.setDialogTitle(choosertitle);
 		chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 		// disable the "All files" option.
