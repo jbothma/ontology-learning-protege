@@ -6,6 +6,7 @@ import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 
+import uk.co.jbothma.protege.protplug.Project;
 import uk.co.jbothma.protege.protplug.candidate.SubclassRelationCandidate;
 import uk.co.jbothma.protege.protplug.candidate.TermCandidate;
 import uk.co.jbothma.taxonomy.AggHierarchClust;
@@ -13,7 +14,7 @@ import uk.co.jbothma.taxonomy.Cluster;
 import uk.co.jbothma.taxonomy.Term;
 
 public class HierarchAggClustSubclasses {
-	public static void run(List<TermCandidate> termCandidates, List<SubclassRelationCandidate> subclassRelCandidates) {
+	public static void run(List<TermCandidate> termCandidates, Project project) {
 		Set<String[]> terms = new HashSet<String[]>();
 		int startIdx = 0;
 		int endIdx = termCandidates.size()-1;
@@ -36,7 +37,7 @@ public class HierarchAggClustSubclasses {
 				for (Term term : clusterTerms) {
 					String domain = StringUtils.join(term.getParts(), " ");
 					cand = new SubclassRelationCandidate(domain, term.getHead());
-					subclassRelCandidates.add(cand);
+					project.getSubclassRelationCandidates().add(cand);
 				}
 			}
 		}

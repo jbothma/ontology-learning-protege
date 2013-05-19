@@ -4,8 +4,9 @@ public class RelationCandidate {
 	private String domain;
 	private String range;
 	private String label;
+	private float confidence;
 
-	public RelationCandidate(String label, String domain, String range) {
+	public RelationCandidate(String label, String domain, String range, float confidence) {
 		this.label = label;
 		this.domain = domain;
 		this.range = range;
@@ -15,4 +16,6 @@ public class RelationCandidate {
 	public String getDomain() { return domain; }		
 	public String getRange() { return range; }		
 	public String getLabel() { return label; }
+	public float getConfidence() { return confidence; }
+
 }

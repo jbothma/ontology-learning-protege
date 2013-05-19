@@ -12,11 +12,12 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
+import uk.co.jbothma.protege.protplug.Project;
 import uk.co.jbothma.protege.protplug.Util;
 import uk.co.jbothma.protege.protplug.candidate.SubclassRelationCandidate;
 
 public class SyntacticPatternSubclasses {
-	public static void run(SerialCorpusImpl corp, ArrayList<SubclassRelationCandidate> subclassRelCandidates) {
+	public static void run(SerialCorpusImpl corp, Project project) {
 		Iterator<Document> docIter = corp.iterator();
 		Document doc;
 		while (docIter.hasNext()) {
@@ -33,7 +34,7 @@ public class SyntacticPatternSubclasses {
 				String superclass = superclass(inputAS, relationAnnot);
 				Set<String> subclasses = subclasses(inputAS, relationAnnot);
 				for (String subclass : subclasses) {
-					subclassRelCandidates.add(new SubclassRelationCandidate(subclass, superclass));
+					project.getSubclassRelationCandidates().add(new SubclassRelationCandidate(subclass, superclass));
 				}
 			}
 			

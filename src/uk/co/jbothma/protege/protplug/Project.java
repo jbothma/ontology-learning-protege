@@ -100,14 +100,14 @@ public class Project {
 	}
 	
 	public void extractElements() {
-		CValueTerms.doCValue(persistCorp, termCandidates);
+		CValueTerms.doCValue(persistCorp, this);
 		fireTermEvent();
 		
-		SyntacticPatternSubclasses.run(persistCorp, subclassRelCandidates);
-		HierarchAggClustSubclasses.run(termCandidates, subclassRelCandidates);
+		SyntacticPatternSubclasses.run(persistCorp, this);
+		HierarchAggClustSubclasses.run(termCandidates, this);
 		fireSubclassEvent();
 		
-		SubcategorisationFrames.run(persistCorp, relationCandidates);
+		SubcategorisationFrames.run(persistCorp, this);
 		fireRelationEvent();
 	}
 

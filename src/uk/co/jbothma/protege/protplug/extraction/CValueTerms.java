@@ -12,6 +12,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
+import uk.co.jbothma.protege.protplug.Project;
 import uk.co.jbothma.protege.protplug.Util;
 import uk.co.jbothma.protege.protplug.candidate.TermCandidate;
 import uk.co.jbothma.terms.CValueComparator;
@@ -19,7 +20,7 @@ import uk.co.jbothma.terms.CValueSess;
 import uk.co.jbothma.terms.Candidate;
 
 public class CValueTerms {
-	public static void doCValue(SerialCorpusImpl corp, ArrayList<TermCandidate> termCandidates) {
+	public static void doCValue(SerialCorpusImpl corp, Project project) {
 		CValueSess cvals = new CValueSess();
 		Iterator<Document> docIter = corp.iterator();
 		Document doc;
@@ -57,7 +58,7 @@ public class CValueTerms {
 		for (Candidate cand : candList) {
 			float conf = (float) ((cand.getCValue()+(-minCVal))/cValInterval);
 			TermCandidate termCand = new TermCandidate(cand.getString(), conf);
-			termCandidates.add(termCand);
+			project.getTermCandidates().add(termCand);
 		}
 	}
 }

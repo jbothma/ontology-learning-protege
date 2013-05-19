@@ -8,16 +8,19 @@ import gate.FeatureMap;
 import gate.Utils;
 import gate.corpora.SerialCorpusImpl;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import uk.co.jbothma.protege.protplug.Project;
 import uk.co.jbothma.protege.protplug.Util;
 import uk.co.jbothma.protege.protplug.candidate.RelationCandidate;
+import uk.co.jbothma.protege.protplug.candidate.TermCandidate;
 
 public class SubcategorisationFrames {
-	public static void run(SerialCorpusImpl corp, List<RelationCandidate> relationCandidates) {
+	public static void run(SerialCorpusImpl corp,  Project project) {
 		Iterator<Document> docIter = corp.iterator();
 		Document doc;
 		while (docIter.hasNext()) {
@@ -72,7 +75,13 @@ public class SubcategorisationFrames {
 							}
 						}
 						if (subjStr != null || objStr != null) {
-							relationCandidates.add(new RelationCandidate(vgStr, subjStr, objStr));
+							float subjConf = termCandConfidence(project.getTermCandidates(), subjStr);
+							float objConf = termCandConfidence(project.getTermCandidates(), subjStr);
+							// confidence in this relation's accuracy and relevance to the domain
+							float conf = subjConf + objConf;
+					        RelationCandidate relCand = new RelationCandidate(vgStr, subjStr, objStr, conf);
+					        System.out.println(relCand.toString() + Float.toString(conf));
+							project.getRelationCandidates().add(relCand);
 						}
 					}
 				}
@@ -98,5 +107,15 @@ public class SubcategorisationFrames {
 			return Util.termAsLemmas(inputAS, containingTermAS.iterator().next());
 		}
 		return null;
+	}
+	
+	private static float termCandConfidence(ArrayList<TermCandidate> termCands, String termLabel) {
+		for (TermCandidate termCand : termCands) {
+			if (termCand.getTerm().equals(termLabel))
+				//System.out.println("conf of " + termLabel + " is " + Float.toString(termCand.getConfidence()));
+				return termCand.getConfidence();
+		}
+		//System.err.println("Didn't find " + termLabel);
+		return 0;
 	}
 }
