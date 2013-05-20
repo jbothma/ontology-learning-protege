@@ -74,7 +74,7 @@ public class SubcategorisationFrames {
 								}
 							}
 						}
-						if (subjStr != null || objStr != null) {
+						if (subjStr != null && objStr != null) {
 							float subjConf = termCandConfidence(project.getTermCandidates(), subjStr);
 							float objConf = termCandConfidence(project.getTermCandidates(), subjStr);
 							// confidence in this relation's accuracy and relevance to the domain
@@ -116,6 +116,6 @@ public class SubcategorisationFrames {
 				return termCand.getConfidence();
 		}
 		//System.err.println("Didn't find " + termLabel);
-		return 0;
+		return (float) 0.0;
 	}
 }

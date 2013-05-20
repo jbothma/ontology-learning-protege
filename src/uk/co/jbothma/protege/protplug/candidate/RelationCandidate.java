@@ -10,6 +10,7 @@ public class RelationCandidate {
 		this.label = label;
 		this.domain = domain;
 		this.range = range;
+		this.confidence = confidence;
 	}
 	
 	public String toString() { return domain + " (" + label + ") " + range; }		

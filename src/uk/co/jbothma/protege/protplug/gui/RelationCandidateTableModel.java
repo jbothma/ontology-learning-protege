@@ -41,13 +41,15 @@ public class RelationCandidateTableModel implements TableModel, RelationEventLis
 			return String.class;
 		else if (col == 2)
 			return String.class;
+		else if (col == 3)
+			return Float.class;
 		else
 			throw new IndexOutOfBoundsException();
 	}
 
 	@Override
 	public int getColumnCount() {
-		return 3;
+		return 4;
 	}
 
 	@Override
@@ -58,6 +60,8 @@ public class RelationCandidateTableModel implements TableModel, RelationEventLis
 			return "Label";
 		else if (col == 2)
 			return "Range";
+		else if (col == 3)
+			return "Confidence";
 		else
 			throw new IndexOutOfBoundsException();
 	}
@@ -78,7 +82,12 @@ public class RelationCandidateTableModel implements TableModel, RelationEventLis
 			return project.getRelationCandidates().get(rowIndex).getLabel();
 		else if (col == 2)
 			return project.getRelationCandidates().get(rowIndex).getRange();
-		else
+		else if (col == 3) {
+			float conf = project.getRelationCandidates().get(rowIndex).getConfidence();
+			Float confOb = new Float(conf);
+			System.out.println(Integer.toString(rowIndex) + ",  " + Float.toString(conf) + ",  " + confOb);
+			return confOb;
+		} else
 			throw new IndexOutOfBoundsException();
 	}
 
