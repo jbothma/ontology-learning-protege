@@ -79,9 +79,7 @@ public class SubcategorisationFrames {
 							float objConf = termCandConfidence(project.getTermCandidates(), subjStr);
 							// confidence in this relation's accuracy and relevance to the domain
 							float conf = subjConf + objConf;
-					        RelationCandidate relCand = new RelationCandidate(vgStr, subjStr, objStr, conf);
-					        System.out.println(relCand.toString() + Float.toString(conf));
-							project.getRelationCandidates().add(relCand);
+							addOccurrence(project.getRelationCandidates(), vgStr, subjStr, objStr, conf);
 						}
 					}
 				}
@@ -90,6 +88,29 @@ public class SubcategorisationFrames {
 			corp.unloadDocument(doc, false);
 			Factory.deleteResource(doc);
 		}
+	}
+
+	private static void addOccurrence(
+			ArrayList<RelationCandidate> relationCandidates, String vgStr,
+			String subjStr, String objStr, float conf) {
+		RelationCandidate relCand = getRelCand(relationCandidates, vgStr, subjStr, objStr);
+		if (relCand == null) {
+			relCand = new RelationCandidate(vgStr, subjStr, objStr, conf);
+			System.out.println(relCand.toString() + Float.toString(conf));
+			relationCandidates.add(relCand);
+		} else {
+			relCand.addOccurrence(conf);
+		}
+	}
+
+	private static RelationCandidate getRelCand(
+			ArrayList<RelationCandidate> relationCandidates, String vgStr, String subjStr,
+			String objStr) {
+		for (RelationCandidate relCand : relationCandidates) {
+			if (relCand.isEquivalent(vgStr, subjStr, objStr))
+				return relCand;
+		}
+		return null;
 	}
 
 	private static void addBranch(Annotation trunk, Annotation branch) {
@@ -112,10 +133,8 @@ public class SubcategorisationFrames {
 	private static float termCandConfidence(ArrayList<TermCandidate> termCands, String termLabel) {
 		for (TermCandidate termCand : termCands) {
 			if (termCand.getTerm().equals(termLabel))
-				//System.out.println("conf of " + termLabel + " is " + Float.toString(termCand.getConfidence()));
 				return termCand.getConfidence();
 		}
-		//System.err.println("Didn't find " + termLabel);
 		return (float) 0.0;
 	}
 }
