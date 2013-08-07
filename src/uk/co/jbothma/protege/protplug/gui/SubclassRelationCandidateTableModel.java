@@ -24,8 +24,8 @@ public class SubclassRelationCandidateTableModel implements TableModel, Subclass
 	}
 
 	@Override
-	public void addTableModelListener(TableModelListener arg0) {
-		// throw new NotImplementedException();
+	public void addTableModelListener(TableModelListener listener) {
+		tableModelListenerList.add(TableModelListener.class, listener);
 	}
 
 	@Override
@@ -77,8 +77,8 @@ public class SubclassRelationCandidateTableModel implements TableModel, Subclass
 	}
 
 	@Override
-	public void removeTableModelListener(TableModelListener arg0) {
-		// throw new NotImplementedException();
+	public void removeTableModelListener(TableModelListener listener) {
+		tableModelListenerList.remove(TableModelListener.class, listener);
 	}
 
 	@Override
