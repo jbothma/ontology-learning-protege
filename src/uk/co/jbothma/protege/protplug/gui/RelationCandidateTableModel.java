@@ -61,7 +61,7 @@ public class RelationCandidateTableModel implements TableModel, RelationEventLis
 		else if (col == 2)
 			return "Range";
 		else if (col == 3)
-			return "Confidence";
+			return "Importance";
 		else
 			throw new IndexOutOfBoundsException();
 	}
