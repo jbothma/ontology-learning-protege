@@ -184,19 +184,18 @@ public class BobPanel extends JPanel {
 		});
 		add(btnExportEverythingTo);
 		
-		btnExportTop = new JButton("Export top 500 terms and all relations");
+		btnExportTop = new JButton("Export selected candidates");
 		btnExportTop.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				OntoBuilder builder = new OntoBuilder(owlModelManager);
-				ArrayList<TermCandidate> terms = project.getTermCandidates();
-				int startIdx = 0;
-				int endIdx = terms.size()-1;
-				if (endIdx>500) {
-					startIdx = endIdx-500;
-				}
-				builder.addTerms(terms.subList(startIdx, endIdx));
-				builder.addSubclassRelations(project.getSubclassRelationCandidates());
-				builder.addRelations(project.getRelationCandidates());
+				
+				builder.addTerms(
+						tableModelSelectedRows(termCandTable, project.getTermCandidates()));
+				builder.addSubclassRelations(
+						tableModelSelectedRows(
+								subclassCandTable,project.getSubclassRelationCandidates()));
+				builder.addRelations(
+						tableModelSelectedRows(relationCandTable, project.getRelationCandidates()));
 			}
 		});
 		add(btnExportTop);
@@ -221,6 +220,16 @@ public class BobPanel extends JPanel {
 				
 		setButtonsEnabled(false);
 		btnNewOntologyLearning.setEnabled(false);
+	}
+	
+	private <CandType> ArrayList<CandType> tableModelSelectedRows(
+			JTable table, ArrayList<CandType> modelBackend) {
+		ArrayList<CandType> selectedRowVals = new ArrayList<CandType>();
+		for (int rowIdx : table.getSelectedRows()) {
+			System.out.println(selectedRowVals.add(modelBackend.get(table.convertRowIndexToModel(rowIdx))));
+			selectedRowVals.add(modelBackend.get(table.convertRowIndexToModel(rowIdx)));
+		}
+		return selectedRowVals;
 	}
 	
 	public void initialized() {
