@@ -128,28 +128,19 @@ public class BobPanel extends JPanel {
 		});
 		add(btnExtractCandidates);
 		
-		btnExportTerms = new JButton("Export terms to CSV");
+		btnExportTerms = new JButton("Export candidates to CSV");
 		btnExportTerms.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				JFileChooser chooser = new JFileChooser(System.getProperty("user.home"));
-				chooser.setDialogTitle("Export terms to file");
-				FileFilter filter = new FileFilter() {
-				    public boolean accept(File file) {
-				        String filename = file.getName();
-				        return filename.endsWith(".csv");
-				    }
-				    public String getDescription() {
-				        return "*.csv";
-				    }
-				};
-				chooser.addChoosableFileFilter(filter);
-				chooser.setAcceptAllFileFilterUsed(false);
+				chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+				chooser.setDialogTitle("Select directory to export to (where concepts.csv etc will be written)");
+				
 				if (chooser.showSaveDialog(BobPanel.this) == JFileChooser.APPROVE_OPTION) {
-					final File exportToFile = chooser.getSelectedFile();
+					final File exportToPath = chooser.getSelectedFile();
 					SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
 					    @Override
 					    public Void doInBackground() throws IOException {
-							project.exportTermsToCSV(exportToFile);
+							project.exportCandidatesToCSV(exportToPath);
 							return null;
 					    }
 
@@ -263,19 +254,20 @@ public class BobPanel extends JPanel {
 			    public void done() {
 			    	try {
 			            get();
+
+				    	((SubclassRelationCandidateTableModel) subclassCandTable.getModel()).setProject(project);
+				    	((RelationCandidateTableModel) relationCandTable.getModel()).setProject(project);
+				    	((TermCandidateTableModel) termCandTable.getModel()).setProject(project);
+				    	project.addSubclassListener((SubclassEventListener) subclassCandTable.getModel());
+				    	project.addRelationListener((RelationEventListener) relationCandTable.getModel());
+				    	project.addTermListener((TermEventListener) termCandTable.getModel());
+				    	setButtonsEnabled(true);
 			        } catch (InterruptedException e) {
 			        	ProtegeApplication.getErrorLog().logError(e);
 			        }
 			        catch (java.util.concurrent.ExecutionException e) {
 			        	ProtegeApplication.getErrorLog().logError(e);
 			        }
-			    	((SubclassRelationCandidateTableModel) subclassCandTable.getModel()).setProject(project);
-			    	((RelationCandidateTableModel) relationCandTable.getModel()).setProject(project);
-			    	((TermCandidateTableModel) termCandTable.getModel()).setProject(project);
-			    	project.addSubclassListener((SubclassEventListener) subclassCandTable.getModel());
-			    	project.addRelationListener((RelationEventListener) relationCandTable.getModel());
-			    	project.addTermListener((TermEventListener) termCandTable.getModel());
-			    	setButtonsEnabled(true);
 			    }
 			};
 			setButtonsEnabled(false);

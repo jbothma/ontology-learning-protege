@@ -124,8 +124,14 @@ public class Project {
 		sds.close();
 	}
 	
-	public void exportTermsToCSV(File exportToFile) throws IOException {
-		BufferedWriter writer = new BufferedWriter(new FileWriter(exportToFile));
+	public void exportCandidatesToCSV(File directory) throws IOException {
+		termsToCSV(new File(directory, "concepts.csv"));
+		hyponymRelsToCSV(new File(directory, "hyponym-relations.csv"));
+		labeledRelsToCSV(new File(directory, "labeled-relations.csv"));
+	}
+	
+	private void termsToCSV(File file) throws IOException {
+		BufferedWriter writer = new BufferedWriter(new FileWriter(file));
 		writer.write("Term,Confidence");
 		writer.newLine();
 		for (TermCandidate cand : termCandidates) {
@@ -134,7 +140,32 @@ public class Project {
 		}
 		writer.close();
 	}
+	
+	private void hyponymRelsToCSV(File file) throws IOException {
+		BufferedWriter writer = new BufferedWriter(new FileWriter(file));
+		writer.write("Hyponym,Hypernym");
+		writer.newLine();
+		for (SubclassRelationCandidate cand : subclassRelCandidates) {
+			writer.write(cand.getDomain().replaceAll(",", "") + "," + cand.getRange());
+			writer.newLine();
+		}
+		writer.close();
+	}
 
+	private void labeledRelsToCSV(File file) throws IOException {
+		BufferedWriter writer = new BufferedWriter(new FileWriter(file));
+		writer.write("Subject,Predicate,Object,Importance");
+		writer.newLine();
+		for (RelationCandidate cand : relationCandidates) {
+			writer.write(cand.getDomain() + "," +
+						 cand.getLabel() + "," +
+						 cand.getRange() + "," +
+						 Float.toString(cand.getConfidence()));
+			writer.newLine();
+		}
+		writer.close();
+	}
+	
 	public void emptyCorpus() throws PersistenceException, ResourceInstantiationException, SecurityException {
 		persistCorp.clear();
 		for (Object docID : sds.getLrIds("gate.corpora.DocumentImpl")) {
